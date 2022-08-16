@@ -1,8 +1,8 @@
 {
   "name": "bff",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "RS Sloths Backend For Frontend",
+  "author": "WOT WOT Team",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
