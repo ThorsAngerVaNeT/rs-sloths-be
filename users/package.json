@@ -61,7 +61,7 @@
   },
   "lint-staged": {
     "src/**/*.+(ts)": [
-      "eslint --fix --silent",
+      "eslint --fix --quiet",
       "tsc-files --noEmit"
     ],
     "src/**/*.{ts,json,md}": [
