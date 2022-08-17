@@ -1,4 +1,4 @@
-import { Controller, Get, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { AppService } from './app.service';
 import { CreateUserDto } from './dto/create-user-dto';

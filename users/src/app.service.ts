@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UsersRepo } from './app.memory.repository';
