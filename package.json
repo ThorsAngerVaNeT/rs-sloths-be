@@ -7,6 +7,9 @@
     "husky": "^8.0.1"
   },
   "scripts": {
+    "start": "concurrently -n w: npm:start:*",
+    "start:users": "cd users && npm run start",
+    "start:bff": "cd bff && npm run start",
     "lint": "concurrently -n w: npm:lint:*",
     "lint:bff": "cd bff && npm run lint:staged",
     "lint:users": "cd users && npm run lint:staged",
