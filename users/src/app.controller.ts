@@ -12,8 +12,8 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern({ cmd: 'get_users' })
-  getUsers(): ServiceResponse<User[]> {
-    return this.appService.getUsers();
+  getUsers({ page = 1, limit = 0 }: { page: number; limit: number }): ServiceResponse<User[]> {
+    return this.appService.getUsers(page, limit);
   }
 
   @MessagePattern({ cmd: 'get_user' })

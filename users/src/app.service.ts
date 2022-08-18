@@ -13,8 +13,8 @@ export class AppService {
     this.usersRepo = new UsersRepo();
   }
 
-  getUsers(): ServiceResponse<User[]> {
-    return this.usersRepo.getAll();
+  getUsers(page: number, limit: number): ServiceResponse<User[]> {
+    return this.usersRepo.getAll(page, limit);
   }
 
   getUser(id: string): ServiceResponse<User> {

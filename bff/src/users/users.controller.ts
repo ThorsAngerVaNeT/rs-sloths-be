@@ -10,6 +10,7 @@ import {
   Put,
   HttpException,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -40,9 +41,9 @@ export class UsersController implements OnApplicationBootstrap {
 
   @Get()
   @HttpCode(200)
-  async findAll() {
+  async findAll(@Query('_page') page: string, @Query('_limit') limit: string) {
     const users = await firstValueFrom(
-      this.client.send<ServiceResponse<User[]>>({ cmd: 'get_users' }, { page: 1, items: 10 })
+      this.client.send<ServiceResponse<User[]>>({ cmd: 'get_users' }, { page, limit })
     );
     return users.data;
   }

@@ -15,7 +15,13 @@ export class UsersRepo {
     ];
   }
 
-  public getAll(): ServiceResponse<User[]> {
+  public getAll(page: number, limit: number): ServiceResponse<User[]> {
+    if (page > 0 && limit > 0) {
+      const start = (page - 1) * limit;
+      const end = start + limit;
+
+      return { data: this.users.slice(start, end), status: HttpStatus.OK };
+    }
     return { data: this.users, status: HttpStatus.OK };
   }
 
