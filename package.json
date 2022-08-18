@@ -1,0 +1,32 @@
+{
+  "name": "rs-sloths-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".eslintrc.js",
+  "devDependencies": {
+    "husky": "^8.0.1"
+  },
+  "scripts": {
+    "start": "concurrently -n w: npm:start:*",
+    "start:users": "cd users && npm run start",
+    "start:bff": "cd bff && npm run start",
+    "lint": "concurrently -n w: npm:lint:*",
+    "lint:bff": "cd bff && npm run lint:staged",
+    "lint:users": "cd users && npm run lint:staged",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThorsAngerVaNeT/rs-sloths-be.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThorsAngerVaNeT/rs-sloths-be/issues"
+  },
+  "homepage": "https://github.com/ThorsAngerVaNeT/rs-sloths-be#readme",
+  "dependencies": {
+    "concurrently": "^7.3.0"
+  }
+}

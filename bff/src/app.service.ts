@@ -2,9 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  constructor(private helloText = 'Hello World!') {}
-
+  // eslint-disable-next-line class-methods-use-this
   getHello(): string {
-    return this.helloText;
+    return 'Hello World!';
   }
 }
