@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Sloth } from './entities/sloth.entity';
 import { SlothsRepo } from './app.memory.repository';
-import { CreateSlothDto } from './dto/create-sloth-dto';
-import { UpdateSlothDto } from './dto/update-sloth-dto';
+import { CreateSlothDto } from './dto/create-sloth.dto';
+import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { ServiceResponse } from './app.interfaces';
+import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 
 @Injectable()
 export class AppService {
@@ -31,5 +32,9 @@ export class AppService {
 
   deleteSloth(id: string): ServiceResponse<Sloth> {
     return this.slothsRepo.delete(id);
+  }
+
+  updateSlothRating(updateSlothRatingDto: UpdateSlothRatingDto): ServiceResponse<Pick<Sloth, 'id' | 'rating'>> {
+    return this.slothsRepo.updateRating(updateSlothRatingDto);
   }
 }

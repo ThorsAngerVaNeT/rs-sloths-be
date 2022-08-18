@@ -3,3 +3,8 @@ export interface ServiceResponse<T> {
   error?: string;
   data?: T | undefined;
 }
+
+export interface SlothUserRating {
+  userId: string;
+  rating: number;
+}

@@ -15,6 +15,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { ServiceResponse } from 'src/app.interfaces';
 import { CreateSlothDto } from './dto/create-sloth.dto';
+import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { Sloth } from './entities/sloth.entity';
 
@@ -75,6 +76,22 @@ export class SlothsController {
   @HttpCode(204)
   async remove(@Param('id') id: string) {
     const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'delete_sloth' }, id));
+    if (sloth.error) {
+      throw new HttpException(sloth.error, sloth.status);
+    }
+
+    return sloth.data;
+  }
+
+  @Put(':id/rating')
+  @HttpCode(200)
+  async updateRating(@Param('id') id: string, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
+    const sloth = await firstValueFrom(
+      this.client.send<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>>(
+        { cmd: 'update_rating' },
+        { ...updateSlothRatingDto, slothId: id }
+      )
+    );
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
     }
