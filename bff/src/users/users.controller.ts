@@ -7,14 +7,17 @@ import {
   Delete,
   Inject,
   OnApplicationBootstrap,
-  NotFoundException,
   Put,
+  HttpException,
+  HttpCode,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { ServiceResponse } from './users.interfaces';
 
 @Controller('users')
 export class UsersController implements OnApplicationBootstrap {
@@ -29,30 +32,53 @@ export class UsersController implements OnApplicationBootstrap {
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.client.send<User>({ cmd: 'create_user' }, createUserDto);
+  @HttpCode(201)
+  async create(@Body() createUserDto: CreateUserDto) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'create_user' }, createUserDto));
+    return user.data;
   }
 
   @Get()
-  findAll() {
-    return this.client.send<User[]>({ cmd: 'get_users' }, { page: 1, items: 10 });
+  @HttpCode(200)
+  async findAll() {
+    const users = await firstValueFrom(
+      this.client.send<ServiceResponse<User[]>>({ cmd: 'get_users' }, { page: 1, items: 10 })
+    );
+    return users.data;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    const user = this.client.send<User>({ cmd: 'get_user' }, id);
-    if (!user) throw new NotFoundException();
+  @HttpCode(200)
+  async findOne(@Param('id') id: string) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, id));
+    if (user.error) {
+      throw new HttpException(user.error, user.status);
+    }
 
-    return user;
+    return user.data;
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.client.send<User>({ cmd: 'get_user' }, { ...updateUserDto, id });
+  @HttpCode(200)
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const user = await firstValueFrom(
+      this.client.send<ServiceResponse<User>>({ cmd: 'update_user' }, { ...updateUserDto, id })
+    );
+    if (user.error) {
+      throw new HttpException(user.error, user.status);
+    }
+
+    return user.data;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.client.send<User>({ cmd: 'delete_user' }, id);
+  @HttpCode(204)
+  async remove(@Param('id') id: string) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'delete_user' }, id));
+    if (user.error) {
+      throw new HttpException(user.error, user.status);
+    }
+
+    return user.data;
   }
 }
