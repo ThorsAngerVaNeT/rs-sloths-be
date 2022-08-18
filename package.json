@@ -9,10 +9,12 @@
   "scripts": {
     "start": "concurrently -n w: npm:start:*",
     "start:users": "cd users && npm run start",
+    "start:sloths": "cd sloths && npm run start",
     "start:bff": "cd bff && npm run start",
     "lint": "concurrently -n w: npm:lint:*",
     "lint:bff": "cd bff && npm run lint:staged",
     "lint:users": "cd users && npm run lint:staged",
+    "lint:sloths": "cd sloths && npm run lint:staged",
     "prepare": "husky install"
   },
   "repository": {
