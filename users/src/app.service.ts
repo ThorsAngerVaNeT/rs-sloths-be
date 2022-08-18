@@ -3,6 +3,7 @@ import { User } from './entities/user.entity';
 import { UsersRepo } from './app.memory.repository';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
+import { ServiceResponse } from './app.interfaces';
 
 @Injectable()
 export class AppService {
@@ -12,23 +13,23 @@ export class AppService {
     this.usersRepo = new UsersRepo();
   }
 
-  getUsers(): User[] {
+  getUsers(): ServiceResponse<User[]> {
     return this.usersRepo.getAll();
   }
 
-  getUser(id: string): User | undefined {
+  getUser(id: string): ServiceResponse<User> {
     return this.usersRepo.getOne(id);
   }
 
-  createUser(createUserDto: CreateUserDto): User {
+  createUser(createUserDto: CreateUserDto): ServiceResponse<User> {
     return this.usersRepo.create(createUserDto);
   }
 
-  updateUser(id: string, updateUserDto: UpdateUserDto): User | undefined {
+  updateUser(id: string, updateUserDto: UpdateUserDto): ServiceResponse<User> {
     return this.usersRepo.update(id, updateUserDto);
   }
 
-  deleteUser(id: string): boolean | undefined {
+  deleteUser(id: string): ServiceResponse<User> {
     return this.usersRepo.delete(id);
   }
 }

@@ -1,5 +1,6 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
+import { ServiceResponse } from './app.interfaces';
 import { AppService } from './app.service';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
@@ -11,29 +12,29 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern({ cmd: 'get_users' })
-  getUsers(): User[] {
+  getUsers(): ServiceResponse<User[]> {
     return this.appService.getUsers();
   }
 
   @MessagePattern({ cmd: 'get_user' })
-  getUser(id: string): User | undefined {
+  getUser(id: string): ServiceResponse<User> {
     return this.appService.getUser(id);
   }
 
   @MessagePattern({ cmd: 'create_user' })
-  createUser(createUserDto: CreateUserDto): User {
+  createUser(createUserDto: CreateUserDto): ServiceResponse<User> {
     const { name, email } = createUserDto;
     return this.appService.createUser({ name, email });
   }
 
   @MessagePattern({ cmd: 'update_user' })
-  updateUser(id: string, updateUserDto: UpdateUserDto): User | undefined {
+  updateUser(id: string, updateUserDto: UpdateUserDto): ServiceResponse<User> {
     const { name, email } = updateUserDto;
     return this.appService.updateUser(id, { id, name, email });
   }
 
   @MessagePattern({ cmd: 'delete_user' })
-  deleteUser(id: string): boolean | undefined {
+  deleteUser(id: string): ServiceResponse<User> {
     return this.appService.deleteUser(id);
   }
 }

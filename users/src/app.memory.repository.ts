@@ -1,4 +1,6 @@
+import { HttpStatus } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { ServiceResponse } from './app.interfaces';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { User } from './entities/user.entity';
@@ -13,32 +15,45 @@ export class UsersRepo {
     ];
   }
 
-  public getAll(): User[] {
-    return this.users;
+  public getAll(): ServiceResponse<User[]> {
+    return { data: this.users, status: HttpStatus.OK };
   }
 
-  getOne(id: string): User | undefined {
-    return this.users.find((user) => user.id === id);
+  getOne(id: string): ServiceResponse<User> {
+    const user = this.users.find((u) => u.id === id);
+    if (!user) {
+      return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
+
+    return { data: user, status: HttpStatus.OK };
   }
 
-  create(createUserDto: CreateUserDto): User {
+  create(createUserDto: CreateUserDto): ServiceResponse<User> {
     const newUser = { ...createUserDto, id: randomUUID() };
     this.users.push(newUser);
-    return newUser;
+
+    return { data: newUser, status: HttpStatus.CREATED };
   }
 
-  update(id: string, updateUserDto: UpdateUserDto): User | undefined {
+  update(id: string, updateUserDto: UpdateUserDto): ServiceResponse<User> {
     const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) return undefined;
+    if (userIndex === -1) {
+      return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
 
     this.users[userIndex] = { ...updateUserDto };
-    return this.users[userIndex];
+
+    return { data: this.users[userIndex], status: HttpStatus.OK };
   }
 
-  delete(id: string): boolean | undefined {
+  delete(id: string): ServiceResponse<User> {
     const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) return undefined;
+    if (userIndex === -1) {
+      return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
+
     this.users.splice(userIndex, 1);
-    return true;
+
+    return { status: HttpStatus.NO_CONTENT };
   }
 }
