@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": ".eslintrc.js",
+  "workspaces": [
+    "./apps/*"
+  ],
   "devDependencies": {
     "husky": "^8.0.1"
   },
