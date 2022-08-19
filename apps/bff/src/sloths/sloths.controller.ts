@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { ServiceResponse } from 'src/app.interfaces';
+import { ServiceResponse } from '../app.interfaces';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';

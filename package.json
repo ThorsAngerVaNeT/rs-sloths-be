@@ -8,14 +8,24 @@
   },
   "scripts": {
     "start": "concurrently -n w: npm:start:*",
-    "start:users": "cd users && npm run start:dev",
-    "start:sloths": "cd sloths && npm run start:dev",
-    "start:bff": "cd bff && npm run start:dev",
-    "lint": "concurrently -n w: npm:lint:*",
-    "lint:bff": "cd bff && npm run lint:staged",
-    "lint:users": "cd users && npm run lint:staged",
-    "lint:sloths": "cd sloths && npm run lint:staged",
+    "start:users": "cd apps/users && npm run start:dev",
+    "start:sloths": "cd apps/sloths && npm run start:dev",
+    "start:bff": "cd apps/bff && npm run start:dev",
+    "lint": "lint-staged --relative",
+    "lint-conc": "concurrently -n w: npm:lint:*",
+    "lint:bff": "cd apps/bff && npm run lint:staged",
+    "lint:users": "cd apps/users && npm run lint:staged",
+    "lint:sloths": "cd apps/sloths && npm run lint:staged",
     "prepare": "husky install"
+  },
+  "lint-staged": {
+    "src/**/*.+(ts)": [
+      "eslint --fix --quiet",
+      "tsc-files --noEmit"
+    ],
+    "src/**/*.{ts,json,md}": [
+      "prettier --write"
+    ]
   },
   "repository": {
     "type": "git",
