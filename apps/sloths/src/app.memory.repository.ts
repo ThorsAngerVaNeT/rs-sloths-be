@@ -97,7 +97,7 @@ export class SlothsRepo {
     const sloth = slothResult.data;
     const isSlothRatingExist = Object.keys(this.rating).includes(slothId);
     if (!isSlothRatingExist) {
-      this.rating[slothId].push({ userId, rating: rate });
+      this.rating[slothId]?.push({ userId, rating: rate });
       if (sloth) {
         sloth.rating = rate;
       }
@@ -108,7 +108,7 @@ export class SlothsRepo {
     if (slothUserRating) {
       slothUserRating.rating = rate;
     } else {
-      this.rating[slothId].push({ userId, rating: rate });
+      this.rating[slothId]?.push({ userId, rating: rate });
     }
 
     const calculatedRating = +(
