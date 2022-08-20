@@ -29,9 +29,9 @@ export class AppController {
   }
 
   @MessagePattern({ cmd: 'update_sloth' })
-  updateSloth(id: string, updateSlothDto: UpdateSlothDto): ServiceResponse<Sloth> {
-    const { caption, description } = updateSlothDto;
-    return this.appService.updateSloth(id, { id, caption, description });
+  updateSloth(updateSlothDto: UpdateSlothDto): ServiceResponse<Sloth> {
+    const { id } = updateSlothDto;
+    return this.appService.updateSloth(id, updateSlothDto);
   }
 
   @MessagePattern({ cmd: 'delete_sloth' })

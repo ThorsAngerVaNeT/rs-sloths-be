@@ -28,9 +28,9 @@ export class AppController {
   }
 
   @MessagePattern({ cmd: 'update_user' })
-  updateUser(id: string, updateUserDto: UpdateUserDto): ServiceResponse<User> {
-    const { name, email } = updateUserDto;
-    return this.appService.updateUser(id, { id, name, email });
+  updateUser(updateUserDto: UpdateUserDto): ServiceResponse<User> {
+    const { id } = updateUserDto;
+    return this.appService.updateUser(id, updateUserDto);
   }
 
   @MessagePattern({ cmd: 'delete_user' })
