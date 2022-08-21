@@ -27,6 +27,7 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/microservices": "^9.0.11",
     "@nestjs/platform-express": "^9.0.0",
+    "@prisma/client": "^4.2.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "reflect-metadata": "^0.1.13",
@@ -85,5 +86,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
