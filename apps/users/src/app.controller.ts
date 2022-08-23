@@ -1,7 +1,7 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { User } from '@prisma/client';
-import { ServiceResponse } from './app.interfaces';
+import { GetAllConditions, ServiceResponse } from './app.interfaces';
 import { AppService } from './app.service';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
@@ -12,8 +12,8 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern({ cmd: 'get_users' })
-  async getUsers({ page = 1, limit = 0 }: { page: number; limit: number }): Promise<ServiceResponse<User[]>> {
-    return this.appService.getUsers(page, limit);
+  async getUsers(params: GetAllConditions): Promise<ServiceResponse<User[]>> {
+    return this.appService.getUsers(params);
   }
 
   @MessagePattern({ cmd: 'get_user' })

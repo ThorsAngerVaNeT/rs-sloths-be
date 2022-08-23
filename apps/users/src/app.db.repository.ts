@@ -1,21 +1,14 @@
 import { HttpStatus } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { ServiceResponse } from './app.interfaces';
-import { CreateUserDto } from './dto/create-user-dto';
+import { GetAllConditions, ServiceResponse } from './app.interfaces';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { PrismaService } from './prisma/prisma.service';
 
 export class UsersRepo {
   constructor(private prisma: PrismaService) {}
 
-  public async getAll(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<ServiceResponse<User[]>> {
+  public async getAll(params: GetAllConditions): Promise<ServiceResponse<User[]>> {
     const { skip, take, cursor, where, orderBy } = params;
     const res = await this.prisma.user.findMany({
       skip,

@@ -39,9 +39,26 @@ export class UsersController implements OnApplicationBootstrap {
 
   @Get()
   @HttpCode(200)
-  async findAll(@Query('_page') page: string, @Query('_limit') limit: string) {
+  async findAll(
+    @Query('_page') page: string,
+    @Query('_limit') limit: string,
+    @Query('skip') skip: string,
+    @Query('take') take: string,
+    @Query('filter') filter: string,
+    @Query('order') order: string
+  ) {
     const users = await firstValueFrom(
-      this.client.send<ServiceResponse<User[]>>({ cmd: 'get_users' }, { page, limit })
+      this.client.send<ServiceResponse<User[]>>(
+        { cmd: 'get_users' },
+        {
+          page,
+          limit,
+          ...(skip && { skip: +skip }),
+          ...(take && { take: +take }),
+          ...(filter && { where: JSON.parse(filter) }),
+          ...(order && { orderBy: JSON.parse(order) }),
+        }
+      )
     );
     return users.data;
   }
