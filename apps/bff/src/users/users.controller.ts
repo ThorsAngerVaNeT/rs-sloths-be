@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   Inject,
-  OnApplicationBootstrap,
   Put,
   HttpException,
   HttpCode,
@@ -17,18 +16,14 @@ import { firstValueFrom } from 'rxjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { ServiceResponse } from '../app.interfaces';
+import { ServiceResponse, UsersAll } from '../app.interfaces';
 
 @Controller('users')
-export class UsersController implements OnApplicationBootstrap {
+export class UsersController {
   constructor(
     @Inject('USERS')
     private readonly client: ClientProxy
   ) {}
-
-  async onApplicationBootstrap() {
-    await this.client.connect();
-  }
 
   @Post()
   @HttpCode(201)
@@ -39,9 +34,22 @@ export class UsersController implements OnApplicationBootstrap {
 
   @Get()
   @HttpCode(200)
-  async findAll(@Query('_page') page: string, @Query('_limit') limit: string) {
+  async findAll(
+    @Query('_page') page: string,
+    @Query('_limit') limit: string,
+    @Query('filter') filter: string,
+    @Query('order') order: string
+  ) {
     const users = await firstValueFrom(
-      this.client.send<ServiceResponse<User[]>>({ cmd: 'get_users' }, { page, limit })
+      this.client.send<ServiceResponse<UsersAll>>(
+        { cmd: 'get_users' },
+        {
+          ...(page && { page: +page }),
+          ...(limit && { limit: +limit }),
+          ...(filter && { where: JSON.parse(filter) }),
+          ...(order && { orderBy: JSON.parse(order) }),
+        }
+      )
     );
     return users.data;
   }

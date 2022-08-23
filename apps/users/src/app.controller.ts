@@ -1,10 +1,10 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { ServiceResponse } from './app.interfaces';
+import { User } from '@prisma/client';
+import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { AppService } from './app.service';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
-import { User } from './entities/user.entity';
 
 @UsePipes(new ValidationPipe())
 @Controller()
@@ -12,29 +12,29 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern({ cmd: 'get_users' })
-  getUsers({ page = 1, limit = 0 }: { page: number; limit: number }): ServiceResponse<User[]> {
-    return this.appService.getUsers(page, limit);
+  async getUsers(params: GetAllConditions): Promise<ServiceResponse<UsersAll>> {
+    return this.appService.getUsers(params);
   }
 
   @MessagePattern({ cmd: 'get_user' })
-  getUser(id: string): ServiceResponse<User> {
-    return this.appService.getUser(id);
+  async getUser(id: string): Promise<ServiceResponse<User>> {
+    return this.appService.getUser({ id });
   }
 
   @MessagePattern({ cmd: 'create_user' })
-  createUser(createUserDto: CreateUserDto): ServiceResponse<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<ServiceResponse<User>> {
     const { name, email } = createUserDto;
     return this.appService.createUser({ name, email });
   }
 
   @MessagePattern({ cmd: 'update_user' })
-  updateUser(updateUserDto: UpdateUserDto): ServiceResponse<User> {
+  async updateUser(updateUserDto: UpdateUserDto): Promise<ServiceResponse<User>> {
     const { id } = updateUserDto;
     return this.appService.updateUser(id, updateUserDto);
   }
 
   @MessagePattern({ cmd: 'delete_user' })
-  deleteUser(id: string): ServiceResponse<User> {
+  async deleteUser(id: string): Promise<ServiceResponse<User>> {
     return this.appService.deleteUser(id);
   }
 }

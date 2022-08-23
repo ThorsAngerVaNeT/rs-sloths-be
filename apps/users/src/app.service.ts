@@ -1,35 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
-import { UsersRepo } from './app.memory.repository';
+import { User } from '@prisma/client';
+import { UsersRepo } from './app.db.repository';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
-import { ServiceResponse } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
+import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
 export class AppService {
   private usersRepo: UsersRepo;
 
   constructor() {
-    this.usersRepo = new UsersRepo();
+    this.usersRepo = new UsersRepo(new PrismaService());
   }
 
-  getUsers(page: number, limit: number): ServiceResponse<User[]> {
-    return this.usersRepo.getAll(page, limit);
+  async getUsers(params: GetAllConditions): Promise<ServiceResponse<UsersAll>> {
+    return this.usersRepo.getAll(params);
   }
 
-  getUser(id: string): ServiceResponse<User> {
-    return this.usersRepo.getOne(id);
+  async getUser(where: { id: string }): Promise<ServiceResponse<User>> {
+    return this.usersRepo.getOne(where);
   }
 
-  createUser(createUserDto: CreateUserDto): ServiceResponse<User> {
-    return this.usersRepo.create(createUserDto);
+  async createUser(createUserDto: CreateUserDto): Promise<ServiceResponse<User>> {
+    return this.usersRepo.create({ ...createUserDto, password: 'def', role: 'USER' });
   }
 
-  updateUser(id: string, updateUserDto: UpdateUserDto): ServiceResponse<User> {
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<ServiceResponse<User>> {
     return this.usersRepo.update(id, updateUserDto);
   }
 
-  deleteUser(id: string): ServiceResponse<User> {
+  async deleteUser(id: string): Promise<ServiceResponse<User>> {
     return this.usersRepo.delete(id);
   }
 }
