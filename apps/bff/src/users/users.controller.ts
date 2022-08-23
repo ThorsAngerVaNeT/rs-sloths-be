@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   Inject,
-  OnApplicationBootstrap,
   Put,
   HttpException,
   HttpCode,
@@ -20,15 +19,11 @@ import { User } from './entities/user.entity';
 import { ServiceResponse, UsersAll } from '../app.interfaces';
 
 @Controller('users')
-export class UsersController implements OnApplicationBootstrap {
+export class UsersController {
   constructor(
     @Inject('USERS')
     private readonly client: ClientProxy
   ) {}
-
-  async onApplicationBootstrap() {
-    await this.client.connect();
-  }
 
   @Post()
   @HttpCode(201)

@@ -26,10 +26,6 @@ export class SlothsController {
     private readonly client: ClientProxy
   ) {}
 
-  async onApplicationBootstrap() {
-    await this.client.connect();
-  }
-
   @Post()
   @HttpCode(201)
   async create(@Body() createSlothDto: CreateSlothDto) {
