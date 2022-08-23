@@ -3,15 +3,29 @@ import { randomUUID } from 'crypto';
 import { ServiceResponse } from './app.interfaces';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
-import { User } from './entities/user.entity';
+import { ROLE, User } from './entities/user.entity';
 
 export class UsersRepo {
   private users: User[];
 
   constructor() {
     this.users = [
-      { id: '1', name: 'bob', email: 'bob@gmail.com' },
-      { id: '2', name: 'john', email: 'john@gmail.com' },
+      {
+        id: 'b17fa9eb-5384-4645-8004-3de3a22a8a51',
+        name: 'bob',
+        email: 'bob@gmail.com',
+        password: '1',
+        createdAt: 1660248195177,
+        role: ROLE.admin,
+      },
+      {
+        id: 'ba550bcd-4255-4c54-86f9-7e2db3786806',
+        name: 'john',
+        email: 'john@gmail.com',
+        password: '2',
+        createdAt: 1661248196177,
+        role: ROLE.user,
+      },
     ];
   }
 
@@ -35,7 +49,7 @@ export class UsersRepo {
   }
 
   create(createUserDto: CreateUserDto): ServiceResponse<User> {
-    const newUser = { ...createUserDto, id: randomUUID() };
+    const newUser = { ...createUserDto, id: randomUUID(), createdAt: Date.now(), role: ROLE.user, password: '' };
     this.users.push(newUser);
 
     return { data: newUser, status: HttpStatus.CREATED };
@@ -47,7 +61,7 @@ export class UsersRepo {
       return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
     }
 
-    this.users[userIndex] = { ...updateUserDto };
+    this.users[userIndex] = { ...this.users[userIndex], ...updateUserDto };
 
     return { data: this.users[userIndex], status: HttpStatus.OK };
   }
