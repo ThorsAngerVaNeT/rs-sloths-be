@@ -30,6 +30,9 @@
       "prettier --write"
     ]
   },
+  "engines": {
+    "npm": ">=8.5.5"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ThorsAngerVaNeT/rs-sloths-be.git"
