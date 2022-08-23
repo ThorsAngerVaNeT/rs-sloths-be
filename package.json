@@ -10,7 +10,7 @@
     "husky": "^8.0.1"
   },
   "scripts": {
-    "start": "concurrently -n w: npm:start:*",
+    "start": "concurrently -n w: npm:start:* --restart-tries 5 --restart-after 3000",
     "start:users": "cd apps/users && npm run start:dev",
     "start:sloths": "cd apps/sloths && npm run start:dev",
     "start:bff": "cd apps/bff && npm run start:dev",
