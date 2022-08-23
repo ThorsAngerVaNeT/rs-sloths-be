@@ -12,15 +12,17 @@ export class UsersRepo {
     const { page = 1, limit: take = undefined, cursor, where, orderBy } = params;
 
     const skip = take ? (page - 1) * take : undefined;
+
+    const conditions = {
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    };
     const [count, items] = await this.prisma.$transaction([
-      this.prisma.user.count(),
-      this.prisma.user.findMany({
-        skip,
-        take,
-        cursor,
-        where,
-        orderBy,
-      }),
+      this.prisma.user.count(conditions),
+      this.prisma.user.findMany(conditions),
     ]);
 
     return { data: { count, items }, status: HttpStatus.OK };
