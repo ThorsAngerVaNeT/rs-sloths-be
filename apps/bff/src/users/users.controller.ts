@@ -42,8 +42,6 @@ export class UsersController implements OnApplicationBootstrap {
   async findAll(
     @Query('_page') page: string,
     @Query('_limit') limit: string,
-    @Query('skip') skip: string,
-    @Query('take') take: string,
     @Query('filter') filter: string,
     @Query('order') order: string
   ) {
@@ -51,10 +49,8 @@ export class UsersController implements OnApplicationBootstrap {
       this.client.send<ServiceResponse<User[]>>(
         { cmd: 'get_users' },
         {
-          page,
-          limit,
-          ...(skip && { skip: +skip }),
-          ...(take && { take: +take }),
+          ...(page && { page: +page }),
+          ...(limit && { limit: +limit }),
           ...(filter && { where: JSON.parse(filter) }),
           ...(order && { orderBy: JSON.parse(order) }),
         }

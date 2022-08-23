@@ -9,7 +9,10 @@ export class UsersRepo {
   constructor(private prisma: PrismaService) {}
 
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<User[]>> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { page = 1, limit: take = 10, cursor, where, orderBy } = params;
+
+    const skip = (page - 1) * take;
+
     const res = await this.prisma.user.findMany({
       skip,
       take,
