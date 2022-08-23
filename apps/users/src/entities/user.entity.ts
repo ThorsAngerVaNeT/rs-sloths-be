@@ -3,8 +3,8 @@ export interface User {
   name: string;
   email: string;
   password: string;
-  createdAt: number;
-  role: ROLE;
+  createdAt: Date;
+  role: 'ADMIN' | 'USER';
 }
 
 export enum ROLE {

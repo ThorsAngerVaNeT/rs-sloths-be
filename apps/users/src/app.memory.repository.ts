@@ -15,7 +15,7 @@ export class UsersRepo {
         name: 'bob',
         email: 'bob@gmail.com',
         password: '1',
-        createdAt: 1660248195177,
+        createdAt: new Date(1660248195177),
         role: ROLE.admin,
       },
       {
@@ -23,13 +23,13 @@ export class UsersRepo {
         name: 'john',
         email: 'john@gmail.com',
         password: '2',
-        createdAt: 1661248196177,
+        createdAt: new Date(1661248196177),
         role: ROLE.user,
       },
     ];
   }
 
-  public getAll(page: number, limit: number): ServiceResponse<User[]> {
+  public async getAll(page: number, limit: number): Promise<ServiceResponse<User[]>> {
     if (page > 0 && limit > 0) {
       const start = (page - 1) * limit;
       const end = start + limit;
@@ -39,7 +39,7 @@ export class UsersRepo {
     return { data: this.users, status: HttpStatus.OK };
   }
 
-  getOne(id: string): ServiceResponse<User> {
+  public async getOne(id: string): Promise<ServiceResponse<User>> {
     const user = this.users.find((u) => u.id === id);
     if (!user) {
       return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
@@ -48,14 +48,14 @@ export class UsersRepo {
     return { data: user, status: HttpStatus.OK };
   }
 
-  create(createUserDto: CreateUserDto): ServiceResponse<User> {
-    const newUser = { ...createUserDto, id: randomUUID(), createdAt: Date.now(), role: ROLE.user, password: '' };
+  public async create(createUserDto: CreateUserDto): Promise<ServiceResponse<User>> {
+    const newUser = { ...createUserDto, id: randomUUID(), createdAt: new Date(), role: ROLE.user, password: '' };
     this.users.push(newUser);
 
     return { data: newUser, status: HttpStatus.CREATED };
   }
 
-  update(id: string, updateUserDto: UpdateUserDto): ServiceResponse<User> {
+  public async update(id: string, updateUserDto: UpdateUserDto): Promise<ServiceResponse<User>> {
     const userIndex = this.users.findIndex((user) => user.id === id);
     if (userIndex === -1) {
       return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
@@ -66,7 +66,7 @@ export class UsersRepo {
     return { data: this.users[userIndex], status: HttpStatus.OK };
   }
 
-  delete(id: string): ServiceResponse<User> {
+  public async delete(id: string): Promise<ServiceResponse<User>> {
     const userIndex = this.users.findIndex((user) => user.id === id);
     if (userIndex === -1) {
       return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
