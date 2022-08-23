@@ -3,7 +3,7 @@ import { User } from '@prisma/client';
 import { UsersRepo } from './app.db.repository';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
-import { GetAllConditions, ServiceResponse } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class AppService {
     this.usersRepo = new UsersRepo(new PrismaService());
   }
 
-  async getUsers(params: GetAllConditions): Promise<ServiceResponse<User[]>> {
+  async getUsers(params: GetAllConditions): Promise<ServiceResponse<UsersAll>> {
     return this.usersRepo.getAll(params);
   }
 

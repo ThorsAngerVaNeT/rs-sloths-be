@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { GetAllConditions, ServiceResponse } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { ROLE, User } from './entities/user.entity';
@@ -29,14 +29,15 @@ export class UsersRepo {
     ];
   }
 
-  public async getAll({ page, limit }: GetAllConditions): Promise<ServiceResponse<User[]>> {
+  public async getAll({ page, limit }: GetAllConditions): Promise<ServiceResponse<UsersAll>> {
     if (page && limit && page > 0 && limit > 0) {
       const start = (page - 1) * limit;
       const end = start + limit;
+      const items = this.users.slice(start, end);
 
-      return { data: this.users.slice(start, end), status: HttpStatus.OK };
+      return { data: { count: items.length, items }, status: HttpStatus.OK };
     }
-    return { data: this.users, status: HttpStatus.OK };
+    return { data: { items: this.users, count: this.users.length }, status: HttpStatus.OK };
   }
 
   public async getOne(id: string): Promise<ServiceResponse<User>> {

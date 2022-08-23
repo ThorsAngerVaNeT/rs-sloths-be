@@ -17,7 +17,7 @@ import { firstValueFrom } from 'rxjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { ServiceResponse } from '../app.interfaces';
+import { ServiceResponse, UsersAll } from '../app.interfaces';
 
 @Controller('users')
 export class UsersController implements OnApplicationBootstrap {
@@ -46,7 +46,7 @@ export class UsersController implements OnApplicationBootstrap {
     @Query('order') order: string
   ) {
     const users = await firstValueFrom(
-      this.client.send<ServiceResponse<User[]>>(
+      this.client.send<ServiceResponse<UsersAll>>(
         { cmd: 'get_users' },
         {
           ...(page && { page: +page }),

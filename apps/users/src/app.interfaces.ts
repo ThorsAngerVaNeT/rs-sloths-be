@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 
 export interface ServiceResponse<T> {
   status: number;
@@ -14,4 +14,9 @@ export interface GetAllConditions {
   cursor?: Prisma.UserWhereUniqueInput;
   where?: Prisma.UserWhereInput;
   orderBy?: Prisma.UserOrderByWithRelationInput;
+}
+
+export interface UsersAll {
+  items: User[];
+  count: number;
 }

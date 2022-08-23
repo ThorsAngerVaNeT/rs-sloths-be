@@ -1,38 +1,41 @@
 import { HttpStatus } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { GetAllConditions, ServiceResponse } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { PrismaService } from './prisma/prisma.service';
 
 export class UsersRepo {
   constructor(private prisma: PrismaService) {}
 
-  public async getAll(params: GetAllConditions): Promise<ServiceResponse<User[]>> {
-    const { page = 1, limit: take = 10, cursor, where, orderBy } = params;
+  public async getAll(params: GetAllConditions): Promise<ServiceResponse<UsersAll>> {
+    const { page = 1, limit: take = undefined, cursor, where, orderBy } = params;
 
-    const skip = (page - 1) * take;
+    const skip = take ? (page - 1) * take : undefined;
+    const [count, items] = await this.prisma.$transaction([
+      this.prisma.user.count(),
+      this.prisma.user.findMany({
+        skip,
+        take,
+        cursor,
+        where,
+        orderBy,
+      }),
+    ]);
 
-    const res = await this.prisma.user.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
-    return { data: res, status: HttpStatus.OK };
+    return { data: { count, items }, status: HttpStatus.OK };
   }
 
   public async getOne(where: Prisma.UserWhereUniqueInput): Promise<ServiceResponse<User>> {
-    const user = await this.prisma.user.findUnique({
+    const data = await this.prisma.user.findUnique({
       where,
     });
 
-    if (!user) {
+    if (!data) {
       return { error: `User "${where.id}" not found!`, status: HttpStatus.NOT_FOUND };
     }
 
-    return { data: user, status: HttpStatus.OK };
+    return { data, status: HttpStatus.OK };
   }
 
   public async create(data: Prisma.UserCreateInput): Promise<ServiceResponse<User>> {
