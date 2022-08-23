@@ -4,7 +4,7 @@ export interface User {
   email: string;
   password: string;
   createdAt: Date;
-  role: 'ADMIN' | 'USER';
+  role: ROLE;
 }
 
 export enum ROLE {
