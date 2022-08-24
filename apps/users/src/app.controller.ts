@@ -1,7 +1,7 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { User } from '@prisma/client';
-import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll, UserValidateData } from './app.interfaces';
 import { AppService } from './app.service';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
@@ -23,8 +23,8 @@ export class AppController {
 
   @MessagePattern({ cmd: 'create_user' })
   async createUser(createUserDto: CreateUserDto): Promise<ServiceResponse<User>> {
-    const { name, email } = createUserDto;
-    return this.appService.createUser({ name, email });
+    const { name, github } = createUserDto;
+    return this.appService.createUser({ name, github });
   }
 
   @MessagePattern({ cmd: 'update_user' })
@@ -36,5 +36,10 @@ export class AppController {
   @MessagePattern({ cmd: 'delete_user' })
   async deleteUser(id: string): Promise<ServiceResponse<User>> {
     return this.appService.deleteUser(id);
+  }
+
+  @MessagePattern({ cmd: 'validate' })
+  async validateUser(userData: UserValidateData): Promise<ServiceResponse<User>> {
+    return this.appService.validateUser(userData);
   }
 }

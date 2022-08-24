@@ -7,5 +7,5 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  email: string;
+  github: string;
 }

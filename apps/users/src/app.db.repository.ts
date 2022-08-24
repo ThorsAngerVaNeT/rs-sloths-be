@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll, UserValidateData } from './app.interfaces';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -80,5 +80,15 @@ export class UsersRepo {
       }
       throw error;
     }
+  }
+
+  public async validate(userData: UserValidateData): Promise<ServiceResponse<User>> {
+    const where = { github: userData.github };
+    const data = await this.prisma.user.upsert({
+      where,
+      update: {},
+      create: userData,
+    });
+    return { data, status: HttpStatus.OK };
   }
 }
