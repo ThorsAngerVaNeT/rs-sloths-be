@@ -10,3 +10,8 @@ export interface UsersAll {
   items: User[];
   count: number;
 }
+
+export interface UserValidateData {
+  name: string;
+  github: string | undefined;
+}
