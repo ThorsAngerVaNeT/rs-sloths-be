@@ -13,11 +13,15 @@ export class AuthService {
 
   async validateUser(userData: UserValidateData) {
     const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'validate' }, userData));
-    console.log('user: ', user);
     if (user.error) {
       throw new HttpException(user.error, user.status);
     }
 
+    return user.data;
+  }
+
+  async findUser(id: string) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, id));
     return user.data;
   }
 }

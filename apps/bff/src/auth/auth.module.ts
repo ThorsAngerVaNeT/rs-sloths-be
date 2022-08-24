@@ -1,13 +1,23 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { GithubStrategy } from './github.strategy';
+import { GithubStrategy } from './strategies/github.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
     ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: '2d' },
+      }),
+      inject: [ConfigService],
+    }),
     ClientsModule.register([
       {
         name: 'USERS',
@@ -20,6 +30,7 @@ import { GithubStrategy } from './github.strategy';
   ],
   controllers: [AuthController],
   providers: [
+    JwtStrategy,
     GithubStrategy,
     {
       provide: 'AUTH_SERVICE',
