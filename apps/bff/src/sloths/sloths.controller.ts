@@ -21,6 +21,7 @@ import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { Sloth } from './entities/sloth.entity';
 
+@UseGuards(JwtAuthGuard)
 @Controller('sloths')
 export class SlothsController {
   constructor(
@@ -37,7 +38,6 @@ export class SlothsController {
     return sloth.data;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   @HttpCode(200)
   async findAll(@Query('_page') page: string, @Query('_limit') limit: string) {
