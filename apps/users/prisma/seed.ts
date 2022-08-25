@@ -9,6 +9,7 @@ async function main() {
 
   const user1 = await prisma.user.create({
     data: {
+      id: 'cd86722d-e3cc-405c-9a46-8da7d7d2dfcf',
       name: 'Admin',
       github: 'test',
       avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
