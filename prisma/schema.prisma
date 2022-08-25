@@ -29,6 +29,6 @@ model Sloth {
   caption       String
   description   String
   image_url     String
-  rating        Float
+  rating        Float     @default(0)
   createdAt     DateTime  @default(now())
 }

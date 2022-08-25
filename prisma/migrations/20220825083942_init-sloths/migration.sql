@@ -4,7 +4,7 @@ CREATE TABLE "Sloth" (
     "caption" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "image_url" TEXT NOT NULL,
-    "rating" DOUBLE PRECISION NOT NULL,
+    "rating" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Sloth_pkey" PRIMARY KEY ("id")
