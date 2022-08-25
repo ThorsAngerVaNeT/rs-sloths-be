@@ -8,4 +8,8 @@ export class CreateSlothDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+
+  @IsNotEmpty()
+  @IsString()
+  image_url: string;
 }

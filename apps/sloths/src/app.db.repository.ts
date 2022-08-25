@@ -41,9 +41,9 @@ export class SlothsRepo {
     return { data, status: HttpStatus.OK };
   }
 
-  public async create(data: Omit<Prisma.SlothCreateInput, 'image_url'>): Promise<ServiceResponse<Sloth>> {
+  public async create(data: Prisma.SlothCreateInput): Promise<ServiceResponse<Sloth>> {
     const newSloth = await this.prisma.sloth.create({
-      data: { ...data, image_url: 'http://localhost:5173/winner1.png' },
+      data,
     });
     return { data: newSloth, status: HttpStatus.CREATED };
   }
