@@ -22,6 +22,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { PublicFileInterceptor } from 'src/public-file.interceptor';
 import { ServiceResponse } from '../app.interfaces';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
@@ -37,17 +38,7 @@ export class SlothsController {
     private configService: ConfigService
   ) {}
 
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './public',
-        filename: (req, file, callback) => {
-          const fileExtName = extname(file.originalname);
-          callback(null, `${randomUUID()}${fileExtName}`);
-        },
-      }),
-    })
-  )
+  @UseInterceptors(PublicFileInterceptor)
   @Post()
   @HttpCode(201)
   async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
@@ -78,11 +69,17 @@ export class SlothsController {
     return sloth.data;
   }
 
+  @UseInterceptors(PublicFileInterceptor)
   @Put(':id')
   @HttpCode(200)
-  async update(@Param('id') id: string, @Body() updateSlothDto: UpdateSlothDto) {
+  async update(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateSlothDto: UpdateSlothDto
+  ) {
+    const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
     const sloth = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth>>({ cmd: 'update_sloth' }, { ...updateSlothDto, id })
+      this.client.send<ServiceResponse<Sloth>>({ cmd: 'update_sloth' }, { ...updateSlothDto, id, image_url: imageUrl })
     );
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
