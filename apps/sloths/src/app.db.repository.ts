@@ -96,7 +96,7 @@ export class SlothsRepo {
       where: {
         id: slothId,
       },
-      data: { rating: rate },
+      data: { rating: calculatedRating },
     });
 
     return { data: { id: slothId, rating: calculatedRating }, status: HttpStatus.OK };
