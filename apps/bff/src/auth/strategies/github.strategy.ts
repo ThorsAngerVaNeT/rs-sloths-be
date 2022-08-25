@@ -2,6 +2,7 @@ import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github2';
+import { User } from '../../users/entities/user.entity';
 import { AuthService } from '../auth.service';
 
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
@@ -14,7 +15,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: Profile) {
+  async validate(accessToken: string, refreshToken: string, profile: Profile): Promise<User | null> {
     const user = await this.authService.validateUser({
       github: profile.username,
       name: profile.displayName,
