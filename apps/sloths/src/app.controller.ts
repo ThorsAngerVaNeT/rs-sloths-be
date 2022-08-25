@@ -1,4 +1,4 @@
-import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
 import { AppService } from './app.service';
@@ -39,10 +39,10 @@ export class AppController {
     return this.appService.deleteSloth(id);
   }
 
-  // @MessagePattern({ cmd: 'update_rating' })
-  // async updateSlothRating(
-  //   updateSlothRatingDto: UpdateSlothRatingDto
-  // ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
-  //   return this.appService.updateSlothRating(updateSlothRatingDto);
-  // }
+  @MessagePattern({ cmd: 'update_rating' })
+  async updateSlothRating(
+    updateSlothRatingDto: UpdateSlothRatingDto
+  ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
+    return this.appService.updateSlothRating(updateSlothRatingDto);
+  }
 }

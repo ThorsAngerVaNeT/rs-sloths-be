@@ -7,8 +7,9 @@ export interface ServiceResponse<T> {
 }
 
 export interface SlothUserRating {
+  slothId: string;
   userId: string;
-  rating: number;
+  rate: number;
 }
 
 export interface GetAllConditions {

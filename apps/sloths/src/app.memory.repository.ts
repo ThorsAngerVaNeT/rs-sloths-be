@@ -9,7 +9,7 @@ import { Sloth } from './entities/sloth.entity';
 export class SlothsRepo {
   private sloths: Sloth[];
 
-  private rating: { [keyof: string]: SlothUserRating[] };
+  private rating: { [keyof: string]: Omit<SlothUserRating, 'slothId'>[] };
 
   constructor() {
     this.sloths = [
@@ -32,10 +32,10 @@ export class SlothsRepo {
     ];
 
     this.rating = {
-      'beb658b5-9178-4ade-ad65-001eddbea009': [{ userId: '3b36a8be-24e6-4577-84b7-a10306ce5438', rating: 4 }],
+      'beb658b5-9178-4ade-ad65-001eddbea009': [{ userId: '3b36a8be-24e6-4577-84b7-a10306ce5438', rate: 4 }],
       'e6242aa4-c297-4edd-9f93-9909e72df5f5': [
-        { userId: 'cf44f746-e8c3-457e-993d-9b4c029d2d28', rating: 4 },
-        { userId: 'abf3d697-68d9-40c9-8647-42c5c01aa8b9', rating: 3 },
+        { userId: 'cf44f746-e8c3-457e-993d-9b4c029d2d28', rate: 4 },
+        { userId: 'abf3d697-68d9-40c9-8647-42c5c01aa8b9', rate: 3 },
       ],
     };
   }
@@ -101,7 +101,7 @@ export class SlothsRepo {
     const sloth = slothResult.data;
     const isSlothRatingExist = Object.keys(this.rating).includes(slothId);
     if (!isSlothRatingExist) {
-      this.rating[slothId]?.push({ userId, rating: rate });
+      this.rating[slothId]?.push({ userId, rate });
       if (sloth) {
         sloth.rating = rate;
       }
@@ -110,13 +110,13 @@ export class SlothsRepo {
 
     const slothUserRating = this.rating[slothId].find((rating) => rating.userId === userId);
     if (slothUserRating) {
-      slothUserRating.rating = rate;
+      slothUserRating.rate = rate;
     } else {
-      this.rating[slothId]?.push({ userId, rating: rate });
+      this.rating[slothId]?.push({ userId, rate });
     }
 
     const calculatedRating = +(
-      this.rating[slothId].reduce((acc, cur) => acc + cur.rating, 0) / this.rating[slothId].length
+      this.rating[slothId].reduce((acc, cur) => acc + cur.rate, 0) / this.rating[slothId].length
     ).toFixed(2);
     sloth.rating = calculatedRating;
 

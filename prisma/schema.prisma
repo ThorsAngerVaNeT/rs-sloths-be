@@ -41,4 +41,6 @@ model SlothUserRating {
   userId        String    @db.Uuid
   rate          Float     @default(0)
   createdAt     DateTime  @default(now())
+
+  @@unique([slothId, userId], name: "SlothUser")
 }

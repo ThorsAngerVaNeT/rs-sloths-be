@@ -1,7 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 import { Prisma, Sloth } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, SlothsAll, SlothUserRating } from './app.interfaces';
+import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -74,6 +75,31 @@ export class SlothsRepo {
     } catch (error) {
       return SlothsRepo.errorHandler(error, id);
     }
+  }
+
+  public async updateRating({
+    slothId,
+    userId,
+    rate,
+  }: UpdateSlothRatingDto): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
+    const where = { SlothUser: { slothId, userId } };
+    await this.prisma.slothUserRating.upsert({
+      where,
+      update: { rate },
+      create: { slothId, userId, rate },
+    });
+
+    const ratings = await this.prisma.slothUserRating.findMany({ where: { slothId } });
+    const calculatedRating = ratings.reduce((acc: number, cur: SlothUserRating) => acc + cur.rate, 0) / ratings.length;
+
+    await this.prisma.sloth.update({
+      where: {
+        id: slothId,
+      },
+      data: { rating: rate },
+    });
+
+    return { data: { id: slothId, rating: calculatedRating }, status: HttpStatus.OK };
   }
 
   static errorHandler(error: Error, id: string) {

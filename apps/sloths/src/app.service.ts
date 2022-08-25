@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Sloth } from './entities/sloth.entity';
 import { SlothsRepo } from './app.db.repository';
-// import { SlothsRepo } from './app.memory.repository';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
@@ -14,7 +13,6 @@ export class AppService {
 
   constructor() {
     this.slothsRepo = new SlothsRepo(new PrismaService());
-    // this.slothsRepo = new SlothsRepo();
   }
 
   async getSloths(params: GetAllConditions): Promise<ServiceResponse<SlothsAll>> {
@@ -37,9 +35,9 @@ export class AppService {
     return this.slothsRepo.delete(id);
   }
 
-  // async updateSlothRating(
-  //   updateSlothRatingDto: UpdateSlothRatingDto
-  // ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
-  //   return this.slothsRepo.updateRating(updateSlothRatingDto);
-  // }
+  async updateSlothRating(
+    updateSlothRatingDto: UpdateSlothRatingDto
+  ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
+    return this.slothsRepo.updateRating(updateSlothRatingDto);
+  }
 }
