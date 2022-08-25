@@ -25,10 +25,20 @@ enum Role {
 }
 
 model Sloth {
-  id            String    @id @default(uuid())
+  id            String              @id @default(uuid()) @db.Uuid
   caption       String
   description   String
   image_url     String
-  rating        Float     @default(0)
+  rating        Float               @default(0)
+  ratings       SlothUserRating[]
+  createdAt     DateTime            @default(now())
+}
+
+model SlothUserRating {
+  id            String    @id @default(uuid())
+  sloth         Sloth     @relation(fields: [slothId], references: [id], onDelete: Cascade)
+  slothId       String    @db.Uuid
+  userId        String    @db.Uuid
+  rate          Float     @default(0)
   createdAt     DateTime  @default(now())
 }
