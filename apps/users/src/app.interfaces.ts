@@ -22,6 +22,7 @@ export interface UsersAll {
 }
 
 export interface UserValidateData {
+  avatar_url: string;
   name: string;
   github: string;
 }

@@ -11,6 +11,7 @@ async function main() {
     data: {
       name: 'Admin',
       github: 'test',
+      avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
       role: 'ADMIN',
     },
   });

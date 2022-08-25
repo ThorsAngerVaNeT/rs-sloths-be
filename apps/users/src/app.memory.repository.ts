@@ -14,6 +14,7 @@ export class UsersRepo {
         id: 'b17fa9eb-5384-4645-8004-3de3a22a8a51',
         name: 'bob',
         github: 'test',
+        avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
         createdAt: new Date(1660248195177),
         role: ROLE.admin,
       },
@@ -21,6 +22,7 @@ export class UsersRepo {
         id: 'ba550bcd-4255-4c54-86f9-7e2db3786806',
         name: 'john',
         github: 'test',
+        avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
         createdAt: new Date(1661248196177),
         role: ROLE.user,
       },
@@ -53,6 +55,7 @@ export class UsersRepo {
       id: randomUUID(),
       createdAt: new Date(),
       role: ROLE.user,
+      avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
     };
     this.users.push(newUser);
 

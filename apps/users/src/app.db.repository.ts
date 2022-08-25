@@ -86,7 +86,7 @@ export class UsersRepo {
     const where = { github: userData.github };
     const data = await this.prisma.user.upsert({
       where,
-      update: {},
+      update: { avatar_url: userData.avatar_url },
       create: userData,
     });
     return { data, status: HttpStatus.OK };

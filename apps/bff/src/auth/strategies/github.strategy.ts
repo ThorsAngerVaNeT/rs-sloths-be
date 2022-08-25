@@ -18,6 +18,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     const user = await this.authService.validateUser({
       github: profile.username,
       name: profile.displayName,
+      avatar_url: profile.photos?.[0]?.value,
     });
     return user || null;
   }

@@ -23,8 +23,8 @@ export class AppController {
 
   @MessagePattern({ cmd: 'create_user' })
   async createUser(createUserDto: CreateUserDto): Promise<ServiceResponse<User>> {
-    const { name, github } = createUserDto;
-    return this.appService.createUser({ name, github });
+    const { name, github, avatar_url: avatarUrl } = createUserDto;
+    return this.appService.createUser({ name, github, avatar_url: avatarUrl });
   }
 
   @MessagePattern({ cmd: 'update_user' })

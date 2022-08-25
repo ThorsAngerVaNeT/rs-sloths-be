@@ -8,4 +8,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   github: string;
+
+  @IsNotEmpty()
+  @IsString()
+  avatar_url: string;
 }
