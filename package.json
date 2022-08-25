@@ -45,6 +45,7 @@
   },
   "homepage": "https://github.com/ThorsAngerVaNeT/rs-sloths-be#readme",
   "dependencies": {
+    "@prisma/client": "^4.2.1",
     "concurrently": "^7.3.0"
   }
 }
