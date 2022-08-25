@@ -16,10 +16,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { randomUUID } from 'crypto';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { PublicFileInterceptor } from 'src/public-file.interceptor';
