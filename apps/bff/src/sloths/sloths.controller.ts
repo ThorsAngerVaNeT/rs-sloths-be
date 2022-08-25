@@ -14,6 +14,7 @@ import {
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { randomUUID } from 'crypto';
@@ -32,7 +33,8 @@ import { Sloth } from './entities/sloth.entity';
 export class SlothsController {
   constructor(
     @Inject('SLOTHS')
-    private readonly client: ClientProxy
+    private readonly client: ClientProxy,
+    private configService: ConfigService
   ) {}
 
   @UseInterceptors(
@@ -49,8 +51,9 @@ export class SlothsController {
   @Post()
   @HttpCode(201)
   async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
+    const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
     const sloth = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth>>({ cmd: 'create_sloth' }, { ...createSlothDto, image_url: file.filename })
+      this.client.send<ServiceResponse<Sloth>>({ cmd: 'create_sloth' }, { ...createSlothDto, image_url: imageUrl })
     );
     return sloth.data;
   }
