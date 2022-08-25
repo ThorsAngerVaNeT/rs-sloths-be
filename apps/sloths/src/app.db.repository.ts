@@ -10,9 +10,10 @@ export class SlothsRepo {
   constructor(private prisma: PrismaService) {}
 
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<SlothsAll>> {
-    const { page = 1, limit: take = undefined, cursor, where, orderBy } = params;
+    const { page = 1, limit, cursor, where, orderBy } = params;
 
-    const skip = take ? (page - 1) * take : undefined;
+    const take = limit && +limit ? +limit : undefined;
+    const skip = take && +page ? (page - 1) * take : undefined;
 
     const conditions = {
       skip,
