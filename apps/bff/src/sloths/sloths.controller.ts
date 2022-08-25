@@ -11,8 +11,14 @@ import {
   HttpException,
   Put,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { randomUUID } from 'crypto';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { ServiceResponse } from '../app.interfaces';
@@ -29,11 +35,22 @@ export class SlothsController {
     private readonly client: ClientProxy
   ) {}
 
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './public',
+        filename: (req, file, callback) => {
+          const fileExtName = extname(file.originalname);
+          callback(null, `${randomUUID()}${fileExtName}`);
+        },
+      }),
+    })
+  )
   @Post()
   @HttpCode(201)
-  async create(@Body() createSlothDto: CreateSlothDto) {
+  async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
     const sloth = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth>>({ cmd: 'create_sloth' }, createSlothDto)
+      this.client.send<ServiceResponse<Sloth>>({ cmd: 'create_sloth' }, { ...createSlothDto, image_url: file.filename })
     );
     return sloth.data;
   }
