@@ -3,8 +3,9 @@ import { User } from '@prisma/client';
 import { UsersRepo } from './app.db.repository';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
-import { GetAllConditions, ServiceResponse, UsersAll, UserValidateData } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { PrismaService } from './prisma/prisma.service';
+import { ValidateUserDto } from './dto/validate-user.dto';
 
 @Injectable()
 export class AppService {
@@ -23,7 +24,7 @@ export class AppService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<ServiceResponse<User>> {
-    return this.usersRepo.create({ ...createUserDto });
+    return this.usersRepo.create(createUserDto);
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<ServiceResponse<User>> {
@@ -34,7 +35,7 @@ export class AppService {
     return this.usersRepo.delete(id);
   }
 
-  async validateUser(userData: UserValidateData): Promise<ServiceResponse<User>> {
+  async validateUser(userData: ValidateUserDto): Promise<ServiceResponse<User>> {
     return this.usersRepo.validate(userData);
   }
 }

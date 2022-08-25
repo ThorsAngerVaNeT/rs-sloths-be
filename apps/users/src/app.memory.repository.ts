@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
+import { ValidateUserDto } from './dto/validate-user.dto';
 import { ROLE, User } from './entities/user.entity';
 
 export class UsersRepo {
@@ -40,7 +41,7 @@ export class UsersRepo {
     return { data: { items: this.users, count: this.users.length }, status: HttpStatus.OK };
   }
 
-  public async getOne(id: string): Promise<ServiceResponse<User>> {
+  public async getOne({ id }: { id: string }): Promise<ServiceResponse<User>> {
     const user = this.users.find((u) => u.id === id);
     if (!user) {
       return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
@@ -82,5 +83,14 @@ export class UsersRepo {
     this.users.splice(userIndex, 1);
 
     return { status: HttpStatus.NO_CONTENT };
+  }
+
+  async validate(userData: ValidateUserDto): Promise<ServiceResponse<User>> {
+    const data = this.users.find((u) => u.github === userData.github);
+    if (data) {
+      return { data, status: HttpStatus.OK };
+    }
+
+    return this.create(userData);
   }
 }

@@ -1,17 +1,19 @@
 import { HttpStatus } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { GetAllConditions, ServiceResponse, UsersAll, UserValidateData } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { UpdateUserDto } from './dto/update-user-dto';
+import { ValidateUserDto } from './dto/validate-user.dto';
 import { PrismaService } from './prisma/prisma.service';
 
 export class UsersRepo {
   constructor(private prisma: PrismaService) {}
 
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<UsersAll>> {
-    const { page = 1, limit: take = undefined, cursor, where, orderBy } = params;
+    const { page = 1, limit, cursor, where, orderBy } = params;
 
-    const skip = take ? (page - 1) * take : undefined;
+    const take = limit && +limit ? +limit : undefined;
+    const skip = take && +page ? (page - 1) * take : undefined;
 
     const conditions = {
       skip,
@@ -76,7 +78,7 @@ export class UsersRepo {
     }
   }
 
-  public async validate(userData: UserValidateData): Promise<ServiceResponse<User>> {
+  public async validate(userData: ValidateUserDto): Promise<ServiceResponse<User>> {
     const where = { github: userData.github };
     const data = await this.prisma.user.upsert({
       where,

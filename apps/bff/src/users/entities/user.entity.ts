@@ -5,6 +5,8 @@ export class User {
 
   github: string;
 
+  image_url: string;
+
   createdAt: Date;
 
   role: ROLE;
