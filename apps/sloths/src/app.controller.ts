@@ -24,8 +24,7 @@ export class AppController {
 
   @MessagePattern({ cmd: 'create_sloth' })
   async createSloth(createSlothDto: CreateSlothDto): Promise<ServiceResponse<Sloth>> {
-    const { caption, description } = createSlothDto;
-    return this.appService.createSloth({ caption, description });
+    return this.appService.createSloth(createSlothDto);
   }
 
   @MessagePattern({ cmd: 'update_sloth' })

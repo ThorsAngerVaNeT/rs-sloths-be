@@ -1,7 +1,7 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { ServiceResponse, UserValidateData } from 'src/app.interfaces';
+import { ServiceResponse, UserValidateData } from '../app.interfaces';
 import { User } from '../users/entities/user.entity';
 
 @Injectable()

@@ -60,7 +60,7 @@ export class SlothsRepo {
   }
 
   public async create(createSlothDto: CreateSlothDto): Promise<ServiceResponse<Sloth>> {
-    const newSloth = { ...createSlothDto, id: randomUUID(), createdAt: new Date(), rating: 0, image_url: './test.png' };
+    const newSloth = { ...createSlothDto, id: randomUUID(), createdAt: new Date(), rating: 0 };
     this.sloths.push(newSloth);
 
     return { data: newSloth, status: HttpStatus.CREATED };

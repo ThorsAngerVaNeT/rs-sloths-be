@@ -1,15 +1,14 @@
 /* eslint-disable class-methods-use-this */
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { GithubAuthGuard } from './guards/github.guard';
-
-const twoDaysMs = 1000 * 60 * 60 * 24 * 2;
 
 @Controller('auth')
 export class AuthController {
-  constructor(private jwtService: JwtService) {}
+  constructor(private jwtService: JwtService, private configService: ConfigService) {}
 
   @UseGuards(GithubAuthGuard)
   @Get('github')
@@ -21,16 +20,17 @@ export class AuthController {
   @Get('github/callback')
   githubCallback(@Req() req: Request, @Res() res: Response) {
     const { user } = req;
+    if (user instanceof User) {
+      const { createdAt, ...payload } = user;
 
-    const { createdAt, ...payload } = user as User;
-
-    res.cookie('rs-sloths-cookie', this.jwtService.sign(payload), {
-      expires: new Date(Date.now() + twoDaysMs),
-      httpOnly: true,
-      secure: true,
-      domain: 'localhost',
-      sameSite: 'none',
-    });
-    res.redirect(`http://localhost:5173/`);
+      res.cookie('rs-sloths-cookie', this.jwtService.sign(payload), {
+        expires: new Date(Date.now() + +this.configService.get('JWT_EXPIRATION_TIME_MILLISECONDS')),
+        httpOnly: true,
+        secure: true,
+        domain: `${this.configService.get('FRONT_DOMAIN')}`,
+        sameSite: 'none',
+      });
+    }
+    res.redirect(`${this.configService.get('FRONT_URL')}`);
   }
 }

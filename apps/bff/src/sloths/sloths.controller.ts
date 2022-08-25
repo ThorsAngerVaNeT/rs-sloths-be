@@ -11,10 +11,14 @@ import {
   HttpException,
   Put,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { PublicFileInterceptor } from '../public-file.interceptor';
 import { ServiceResponse } from '../app.interfaces';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
@@ -26,14 +30,17 @@ import { Sloth } from './entities/sloth.entity';
 export class SlothsController {
   constructor(
     @Inject('SLOTHS')
-    private readonly client: ClientProxy
+    private readonly client: ClientProxy,
+    private configService: ConfigService
   ) {}
 
+  @UseInterceptors(PublicFileInterceptor)
   @Post()
   @HttpCode(201)
-  async create(@Body() createSlothDto: CreateSlothDto) {
+  async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
+    const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
     const sloth = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth>>({ cmd: 'create_sloth' }, createSlothDto)
+      this.client.send<ServiceResponse<Sloth>>({ cmd: 'create_sloth' }, { ...createSlothDto, image_url: imageUrl })
     );
     return sloth.data;
   }
@@ -58,11 +65,17 @@ export class SlothsController {
     return sloth.data;
   }
 
+  @UseInterceptors(PublicFileInterceptor)
   @Put(':id')
   @HttpCode(200)
-  async update(@Param('id') id: string, @Body() updateSlothDto: UpdateSlothDto) {
+  async update(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateSlothDto: UpdateSlothDto
+  ) {
+    const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
     const sloth = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth>>({ cmd: 'update_sloth' }, { ...updateSlothDto, id })
+      this.client.send<ServiceResponse<Sloth>>({ cmd: 'update_sloth' }, { ...updateSlothDto, id, image_url: imageUrl })
     );
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
