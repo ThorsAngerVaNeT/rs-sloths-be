@@ -10,15 +10,18 @@ import {
   Query,
   HttpException,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { ServiceResponse } from '../app.interfaces';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { Sloth } from './entities/sloth.entity';
 
+@UseGuards(JwtAuthGuard)
 @Controller('sloths')
 export class SlothsController {
   constructor(

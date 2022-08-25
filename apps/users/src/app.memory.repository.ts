@@ -13,16 +13,16 @@ export class UsersRepo {
       {
         id: 'b17fa9eb-5384-4645-8004-3de3a22a8a51',
         name: 'bob',
-        email: 'bob@gmail.com',
-        password: '1',
+        github: 'test',
+        avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
         createdAt: new Date(1660248195177),
         role: ROLE.admin,
       },
       {
         id: 'ba550bcd-4255-4c54-86f9-7e2db3786806',
         name: 'john',
-        email: 'john@gmail.com',
-        password: '2',
+        github: 'test',
+        avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
         createdAt: new Date(1661248196177),
         role: ROLE.user,
       },
@@ -50,7 +50,13 @@ export class UsersRepo {
   }
 
   public async create(createUserDto: CreateUserDto): Promise<ServiceResponse<User>> {
-    const newUser = { ...createUserDto, id: randomUUID(), createdAt: new Date(), role: ROLE.user, password: '' };
+    const newUser = {
+      ...createUserDto,
+      id: randomUUID(),
+      createdAt: new Date(),
+      role: ROLE.user,
+      avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
+    };
     this.users.push(newUser);
 
     return { data: newUser, status: HttpStatus.CREATED };

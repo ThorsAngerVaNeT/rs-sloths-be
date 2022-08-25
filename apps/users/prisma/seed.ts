@@ -10,8 +10,8 @@ async function main() {
   const user1 = await prisma.user.create({
     data: {
       name: 'Admin',
-      email: 'sloths@rs.school',
-      password: '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm', // secret42
+      github: 'test',
+      avatar_url: 'https://avatars.githubusercontent.com/u/101447709?v=4',
       role: 'ADMIN',
     },
   });

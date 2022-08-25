@@ -1,8 +1,8 @@
 export interface User {
   id: string;
   name: string;
-  email: string;
-  password: string;
+  github: string;
+  avatar_url: string;
   createdAt: Date;
   role: ROLE;
 }

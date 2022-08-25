@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, UsersAll, UserValidateData } from './app.interfaces';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -59,10 +59,7 @@ export class UsersRepo {
 
       return { data: user, status: HttpStatus.CREATED };
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-        return { error: `User "${where.id}" not found!`, status: HttpStatus.NOT_FOUND };
-      }
-      throw error;
+      return UsersRepo.errorHandler(error, id);
     }
   }
 
@@ -75,10 +72,24 @@ export class UsersRepo {
 
       return { status: HttpStatus.NO_CONTENT };
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-        return { error: `User "${where.id}" not found!`, status: HttpStatus.NOT_FOUND };
-      }
-      throw error;
+      return UsersRepo.errorHandler(error, id);
     }
+  }
+
+  public async validate(userData: UserValidateData): Promise<ServiceResponse<User>> {
+    const where = { github: userData.github };
+    const data = await this.prisma.user.upsert({
+      where,
+      update: { avatar_url: userData.avatar_url },
+      create: userData,
+    });
+    return { data, status: HttpStatus.OK };
+  }
+
+  static errorHandler(error: Error, id: string) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+      return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
+    return { error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
   }
 }

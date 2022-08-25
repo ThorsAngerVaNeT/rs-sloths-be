@@ -10,3 +10,9 @@ export interface UsersAll {
   items: User[];
   count: number;
 }
+
+export interface UserValidateData {
+  avatar_url: string | undefined;
+  name: string;
+  github: string | undefined;
+}
