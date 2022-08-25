@@ -59,10 +59,7 @@ export class UsersRepo {
 
       return { data: user, status: HttpStatus.CREATED };
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-        return { error: `User "${where.id}" not found!`, status: HttpStatus.NOT_FOUND };
-      }
-      throw error;
+      return UsersRepo.errorHandler(error, id);
     }
   }
 
@@ -75,10 +72,7 @@ export class UsersRepo {
 
       return { status: HttpStatus.NO_CONTENT };
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-        return { error: `User "${where.id}" not found!`, status: HttpStatus.NOT_FOUND };
-      }
-      throw error;
+      return UsersRepo.errorHandler(error, id);
     }
   }
 
@@ -90,5 +84,12 @@ export class UsersRepo {
       create: userData,
     });
     return { data, status: HttpStatus.OK };
+  }
+
+  static errorHandler(error: Error, id: string) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+      return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
+    return { error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
   }
 }
