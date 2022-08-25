@@ -13,7 +13,7 @@ datasource db {
 model User {
   id            String    @id @default(uuid())
   name          String
-  avatar_url    String
+  avatar_url    String?
   github        String    @unique
   createdAt     DateTime  @default(now())
   role          Role      @default(USER)
