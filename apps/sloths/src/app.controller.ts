@@ -1,6 +1,6 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { ServiceResponse } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
 import { AppService } from './app.service';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
@@ -13,34 +13,36 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern({ cmd: 'get_sloths' })
-  getSloths({ page = 1, limit = 0 }: { page: number; limit: number }): ServiceResponse<Sloth[]> {
-    return this.appService.getSloths(page, limit);
+  async getSloths(params: GetAllConditions): Promise<ServiceResponse<SlothsAll>> {
+    return this.appService.getSloths(params);
   }
 
   @MessagePattern({ cmd: 'get_sloth' })
-  getSloth(id: string): ServiceResponse<Sloth> {
-    return this.appService.getSloth(id);
+  async getSloth(id: string): Promise<ServiceResponse<Sloth>> {
+    return this.appService.getSloth({ id });
   }
 
   @MessagePattern({ cmd: 'create_sloth' })
-  createSloth(createSlothDto: CreateSlothDto): ServiceResponse<Sloth> {
+  async createSloth(createSlothDto: CreateSlothDto): Promise<ServiceResponse<Sloth>> {
     const { caption, description } = createSlothDto;
     return this.appService.createSloth({ caption, description });
   }
 
   @MessagePattern({ cmd: 'update_sloth' })
-  updateSloth(updateSlothDto: UpdateSlothDto): ServiceResponse<Sloth> {
+  async updateSloth(updateSlothDto: UpdateSlothDto): Promise<ServiceResponse<Sloth>> {
     const { id } = updateSlothDto;
     return this.appService.updateSloth(id, updateSlothDto);
   }
 
   @MessagePattern({ cmd: 'delete_sloth' })
-  deleteSloth(id: string): ServiceResponse<Sloth> {
+  async deleteSloth(id: string): Promise<ServiceResponse<Sloth>> {
     return this.appService.deleteSloth(id);
   }
 
-  @MessagePattern({ cmd: 'update_rating' })
-  updateSlothRating(updateSlothRatingDto: UpdateSlothRatingDto): ServiceResponse<Pick<Sloth, 'id' | 'rating'>> {
-    return this.appService.updateSlothRating(updateSlothRatingDto);
-  }
+  // @MessagePattern({ cmd: 'update_rating' })
+  // async updateSlothRating(
+  //   updateSlothRatingDto: UpdateSlothRatingDto
+  // ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
+  //   return this.appService.updateSlothRating(updateSlothRatingDto);
+  // }
 }

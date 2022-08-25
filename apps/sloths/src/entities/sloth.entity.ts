@@ -4,5 +4,5 @@ export interface Sloth {
   description: string;
   image_url: string;
   rating: number;
-  createdAt: number;
+  createdAt: Date;
 }

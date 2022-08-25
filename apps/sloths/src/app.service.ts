@@ -1,40 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { Sloth } from './entities/sloth.entity';
-import { SlothsRepo } from './app.memory.repository';
+import { SlothsRepo } from './app.db.repository';
+// import { SlothsRepo } from './app.memory.repository';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
-import { ServiceResponse } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
+import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
 export class AppService {
   private slothsRepo: SlothsRepo;
 
   constructor() {
-    this.slothsRepo = new SlothsRepo();
+    this.slothsRepo = new SlothsRepo(new PrismaService());
+    // this.slothsRepo = new SlothsRepo();
   }
 
-  getSloths(page: number, limit: number): ServiceResponse<Sloth[]> {
-    return this.slothsRepo.getAll(page, limit);
+  async getSloths(params: GetAllConditions): Promise<ServiceResponse<SlothsAll>> {
+    return this.slothsRepo.getAll(params);
   }
 
-  getSloth(id: string): ServiceResponse<Sloth> {
-    return this.slothsRepo.getOne(id);
+  async getSloth(where: { id: string }): Promise<ServiceResponse<Sloth>> {
+    return this.slothsRepo.getOne(where);
   }
 
-  createSloth(createSlothDto: CreateSlothDto): ServiceResponse<Sloth> {
-    return this.slothsRepo.create(createSlothDto);
+  async createSloth(createSlothDto: CreateSlothDto): Promise<ServiceResponse<Sloth>> {
+    return this.slothsRepo.create({ ...createSlothDto });
   }
 
-  updateSloth(id: string, updateSlothDto: UpdateSlothDto): ServiceResponse<Sloth> {
+  async updateSloth(id: string, updateSlothDto: UpdateSlothDto): Promise<ServiceResponse<Sloth>> {
     return this.slothsRepo.update(id, updateSlothDto);
   }
 
-  deleteSloth(id: string): ServiceResponse<Sloth> {
+  async deleteSloth(id: string): Promise<ServiceResponse<Sloth>> {
     return this.slothsRepo.delete(id);
   }
 
-  updateSlothRating(updateSlothRatingDto: UpdateSlothRatingDto): ServiceResponse<Pick<Sloth, 'id' | 'rating'>> {
-    return this.slothsRepo.updateRating(updateSlothRatingDto);
-  }
+  // async updateSlothRating(
+  //   updateSlothRatingDto: UpdateSlothRatingDto
+  // ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
+  //   return this.slothsRepo.updateRating(updateSlothRatingDto);
+  // }
 }
