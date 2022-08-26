@@ -1,10 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { ValidateUserDto } from './dto/validate-user.dto';
-import { ROLE, User } from './entities/user.entity';
+import { ROLE } from './entities/user.entity';
 
 export class UsersRepo {
   private users: User[];
