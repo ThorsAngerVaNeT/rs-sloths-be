@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { Prisma, Sloth } from '@prisma/client';
+import { Prisma, Sloth, Tag } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { GetAllConditions, ServiceResponse, SlothsAll, SlothUserRating } from './app.interfaces';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
@@ -9,9 +9,9 @@ import { PrismaService } from './prisma/prisma.service';
 export class SlothsRepo {
   constructor(private prisma: PrismaService) {}
 
-  static errorHandler(error: Error, id: string) {
+  static errorHandler(error: Error, entity: string, id: string) {
     if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-      return { error: `Sloth "${id}" not found!`, status: HttpStatus.NOT_FOUND };
+      return { error: `${entity} "${id}" not found!`, status: HttpStatus.NOT_FOUND };
     }
     return { error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
   }
@@ -78,7 +78,7 @@ export class SlothsRepo {
 
       return { data: sloth, status: HttpStatus.CREATED };
     } catch (error) {
-      return SlothsRepo.errorHandler(error, id);
+      return SlothsRepo.errorHandler(error, 'Sloth', id);
     }
   }
 
@@ -91,7 +91,7 @@ export class SlothsRepo {
 
       return { status: HttpStatus.NO_CONTENT };
     } catch (error) {
-      return SlothsRepo.errorHandler(error, id);
+      return SlothsRepo.errorHandler(error, 'Sloth', id);
     }
   }
 
@@ -118,5 +118,29 @@ export class SlothsRepo {
     });
 
     return { data: { id: slothId, rating: calculatedRating }, status: HttpStatus.OK };
+  }
+
+  public async createTag(data: Prisma.TagCreateManyInput): Promise<ServiceResponse<Tag>> {
+    const tag = await this.prisma.tag.create({
+      data,
+    });
+    return { data: tag, status: HttpStatus.CREATED };
+  }
+
+  public async deleteTag(tag: Tag): Promise<ServiceResponse<Tag>> {
+    const where: Prisma.TagWhereUniqueInput = { SlothTag: tag };
+    try {
+      await this.prisma.tag.delete({
+        where,
+      });
+
+      return { status: HttpStatus.NO_CONTENT };
+    } catch (error) {
+      return SlothsRepo.errorHandler(error, 'Tag', tag.value);
+    }
+  }
+
+  public async getUniqueTags() {
+    return this.prisma.tag.findMany({ select: { value: true }, distinct: ['value'] });
   }
 }

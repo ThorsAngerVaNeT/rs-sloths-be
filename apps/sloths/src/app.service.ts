@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Tag } from '@prisma/client';
 import { Sloth } from './entities/sloth.entity';
 import { SlothsRepo } from './app.db.repository';
 import { CreateSlothDto } from './dto/create-sloth.dto';
@@ -40,5 +41,13 @@ export class AppService {
     updateSlothRatingDto: UpdateSlothRatingDto
   ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
     return this.slothsRepo.updateRating(updateSlothRatingDto);
+  }
+
+  async createTag(createTagDto: Tag): Promise<ServiceResponse<Tag>> {
+    return this.slothsRepo.createTag(createTagDto);
+  }
+
+  async deleteTag(tag: Tag): Promise<ServiceResponse<Tag>> {
+    return this.slothsRepo.deleteTag(tag);
   }
 }
