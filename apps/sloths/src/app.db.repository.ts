@@ -9,20 +9,38 @@ import { PrismaService } from './prisma/prisma.service';
 export class SlothsRepo {
   constructor(private prisma: PrismaService) {}
 
+  static errorHandler(error: Error, id: string) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+      return { error: `Sloth "${id}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
+    return { error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+  }
+
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<SlothsAll>> {
     const { page = 1, limit, cursor, where, orderBy } = params;
 
     const take = limit && +limit ? +limit : undefined;
     const skip = take && +page ? (page - 1) * take : undefined;
-
     const conditions = {
       cursor,
       where,
       orderBy,
     };
+
     const [count, items] = await this.prisma.$transaction([
       this.prisma.sloth.count(conditions),
-      this.prisma.sloth.findMany({ ...conditions, skip, take }),
+      this.prisma.sloth.findMany({
+        ...conditions,
+        skip,
+        take,
+        include: {
+          tags: {
+            select: {
+              value: true,
+            },
+          },
+        },
+      }),
     ]);
 
     return { data: { count, items }, status: HttpStatus.OK };
@@ -48,8 +66,9 @@ export class SlothsRepo {
   }
 
   public async update(id: string, updateSlothDto: UpdateSlothDto): Promise<ServiceResponse<Sloth>> {
+    const { tags, ...restUpdateSlothDto } = updateSlothDto;
     const where: Prisma.SlothWhereUniqueInput = { id };
-    const data: Prisma.SlothUpdateInput = updateSlothDto;
+    const data: Prisma.SlothUpdateInput = restUpdateSlothDto;
 
     try {
       const sloth = await this.prisma.sloth.update({
@@ -99,12 +118,5 @@ export class SlothsRepo {
     });
 
     return { data: { id: slothId, rating: calculatedRating }, status: HttpStatus.OK };
-  }
-
-  static errorHandler(error: Error, id: string) {
-    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-      return { error: `Sloth "${id}" not found!`, status: HttpStatus.NOT_FOUND };
-    }
-    return { error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
   }
 }

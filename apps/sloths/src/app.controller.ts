@@ -1,4 +1,4 @@
-import { Controller, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
 import { AppService } from './app.service';

@@ -1,3 +1,4 @@
+import { Tag } from '@prisma/client';
 import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateSlothDto {
@@ -12,4 +13,6 @@ export class CreateSlothDto {
   @IsNotEmpty()
   @IsString()
   image_url: string;
+
+  tags: Omit<Tag, 'slothId'>[];
 }
