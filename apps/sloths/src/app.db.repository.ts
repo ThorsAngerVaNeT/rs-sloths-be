@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { Prisma, Sloth, Tag } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { GetAllConditions, ServiceResponse, SlothsAll, SlothUserRating } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, SlothsAll, SlothUserRating, TagsValueList } from './app.interfaces';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { PrismaService } from './prisma/prisma.service';
@@ -140,7 +140,9 @@ export class SlothsRepo {
     }
   }
 
-  public async getUniqueTags() {
-    return this.prisma.tag.findMany({ select: { value: true }, distinct: ['value'] });
+  public async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
+    const data = await this.prisma.tag.findMany({ select: { value: true }, distinct: ['value'] });
+
+    return { data, status: HttpStatus.OK };
   }
 }

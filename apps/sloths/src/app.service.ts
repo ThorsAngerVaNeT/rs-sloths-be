@@ -4,7 +4,7 @@ import { Sloth } from './entities/sloth.entity';
 import { SlothsRepo } from './app.db.repository';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
-import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, SlothsAll, TagsValueList } from './app.interfaces';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -49,5 +49,9 @@ export class AppService {
 
   async deleteTag(tag: Tag): Promise<ServiceResponse<Tag>> {
     return this.slothsRepo.deleteTag(tag);
+  }
+
+  async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
+    return this.slothsRepo.getUniqueTags();
   }
 }

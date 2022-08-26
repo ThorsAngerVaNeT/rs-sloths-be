@@ -1,4 +1,4 @@
-import { Prisma, Sloth } from '@prisma/client';
+import { Prisma, Sloth, Tag } from '@prisma/client';
 
 export interface ServiceResponse<T> {
   status: number;
@@ -26,3 +26,5 @@ export interface SlothsAll {
   items: Sloth[];
   count: number;
 }
+
+export type TagsValueList = Omit<Tag, 'slothId'>[];
