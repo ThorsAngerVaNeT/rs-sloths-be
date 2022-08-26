@@ -47,9 +47,22 @@ export class SlothsController {
 
   @Get()
   @HttpCode(200)
-  async findAll(@Query('_page') page: string, @Query('_limit') limit: string) {
+  async findAll(
+    @Query('_page') page: string,
+    @Query('_limit') limit: string,
+    @Query('filter') filter: string,
+    @Query('order') order: string
+  ) {
     const sloths = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth[]>>({ cmd: 'get_sloths' }, { page, limit })
+      this.client.send<ServiceResponse<Sloth[]>>(
+        { cmd: 'get_sloths' },
+        {
+          ...(page && { page: +page }),
+          ...(limit && { limit: +limit }),
+          ...(filter && { where: JSON.parse(filter) }),
+          ...(order && { orderBy: JSON.parse(order) }),
+        }
+      )
     );
     return sloths.data;
   }
@@ -98,6 +111,22 @@ export class SlothsController {
   @Put(':id/rating')
   @HttpCode(200)
   async updateRating(@Param('id') id: string, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
+    const sloth = await firstValueFrom(
+      this.client.send<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>>(
+        { cmd: 'update_rating' },
+        { ...updateSlothRatingDto, slothId: id }
+      )
+    );
+    if (sloth.error) {
+      throw new HttpException(sloth.error, sloth.status);
+    }
+
+    return sloth.data;
+  }
+
+  @Post(':id/tag')
+  @HttpCode(200)
+  async createTag(@Param('id') id: string, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>>(
         { cmd: 'update_rating' },
