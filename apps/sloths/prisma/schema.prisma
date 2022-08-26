@@ -18,6 +18,7 @@ model Sloth {
   rating        Float               @default(0)
   ratings       SlothUserRating[]
   createdAt     DateTime            @default(now())
+  tags          Tag[]
 }
 
 model SlothUserRating {
@@ -29,4 +30,12 @@ model SlothUserRating {
   createdAt     DateTime  @default(now())
 
   @@unique([slothId, userId], name: "SlothUser")
+}
+
+model Tag {  
+  sloth     Sloth     @relation(fields: [slothId], references: [id], onDelete: Cascade)
+  slothId   String    @db.Uuid
+  value     String
+
+  @@unique([slothId, value], name: "SlothTag")
 }
