@@ -16,15 +16,13 @@ export class SlothsRepo {
     const skip = take && +page ? (page - 1) * take : undefined;
 
     const conditions = {
-      skip,
-      take,
       cursor,
       where,
       orderBy,
     };
     const [count, items] = await this.prisma.$transaction([
       this.prisma.sloth.count(conditions),
-      this.prisma.sloth.findMany(conditions),
+      this.prisma.sloth.findMany({ ...conditions, skip, take }),
     ]);
 
     return { data: { count, items }, status: HttpStatus.OK };
