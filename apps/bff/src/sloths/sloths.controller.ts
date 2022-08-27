@@ -51,7 +51,13 @@ export class SlothsController {
   @Get()
   @HttpCode(200)
   async findAll(@Query() queryParams: QueryDto) {
-    const sloths = await firstValueFrom(this.client.send<ServiceResponse<Sloth[]>>({ cmd: 'get_sloths' }, queryParams));
+    const { page, limit, filter, order } = queryParams;
+    const sloths = await firstValueFrom(
+      this.client.send<ServiceResponse<Sloth[]>>(
+        { cmd: 'get_sloths' },
+        { page, limit, ...(filter && { where: JSON.parse(filter) }), ...(order && { orderBy: JSON.parse(order) }) }
+      )
+    );
     return sloths.data;
   }
 
@@ -74,7 +80,7 @@ export class SlothsController {
     @UploadedFile() file: Express.Multer.File,
     @Body() updateSlothDto: UpdateSlothDto
   ) {
-    const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
+    const imageUrl = file ? `${this.configService.get('BFF_URL')}${file.filename}` : updateSlothDto.image_url;
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Sloth>>({ cmd: 'update_sloth' }, { ...updateSlothDto, id, image_url: imageUrl })
     );

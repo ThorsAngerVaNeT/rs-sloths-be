@@ -39,7 +39,13 @@ export class UsersController {
   @Get()
   @HttpCode(200)
   async findAll(@Query() queryParams: QueryDto) {
-    const users = await firstValueFrom(this.client.send<ServiceResponse<UsersAll>>({ cmd: 'get_users' }, queryParams));
+    const { page, limit, filter, order } = queryParams;
+    const users = await firstValueFrom(
+      this.client.send<ServiceResponse<UsersAll>>(
+        { cmd: 'get_users' },
+        { page, limit, ...(filter && { where: JSON.parse(filter) }), ...(order && { orderBy: JSON.parse(order) }) }
+      )
+    );
     return users.data;
   }
 
