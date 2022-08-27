@@ -44,14 +44,10 @@ export class SlothsController {
   async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
     const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
     const { tags, ...restCreateSlothDto } = createSlothDto;
-    let tagsObject = '';
-    if (tags) {
-      tagsObject = JSON.parse(tags);
-    }
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Sloth>>(
         { cmd: 'create_sloth' },
-        { ...restCreateSlothDto, ...(tags && { tags: tagsObject }), image_url: imageUrl }
+        { ...restCreateSlothDto, ...(tags && { tags }), image_url: imageUrl }
       )
     );
     return sloth.data;
