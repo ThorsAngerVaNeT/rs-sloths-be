@@ -102,8 +102,12 @@ export class SlothsController {
     @Body() updateSlothDto: UpdateSlothDto
   ) {
     const imageUrl = file ? `${this.configService.get('BFF_URL')}${file.filename}` : updateSlothDto.image_url;
+    const { tags, ...restUpdateSlothDto } = updateSlothDto;
     const sloth = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth>>({ cmd: 'update_sloth' }, { ...updateSlothDto, id, image_url: imageUrl })
+      this.client.send<ServiceResponse<Sloth>>(
+        { cmd: 'update_sloth' },
+        { ...restUpdateSlothDto, ...(tags && { tags }), id, image_url: imageUrl }
+      )
     );
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
