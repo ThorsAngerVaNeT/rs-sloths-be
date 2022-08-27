@@ -45,14 +45,4 @@ export class AppController {
   ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
     return this.appService.updateSlothRating(updateSlothRatingDto);
   }
-
-  @MessagePattern({ cmd: 'create_tag' })
-  async createTag(createTagDto: Tag): Promise<ServiceResponse<Tag>> {
-    return this.appService.createTag(createTagDto);
-  }
-
-  @MessagePattern({ cmd: 'delete_tag' })
-  async deleteTag(tag: Tag): Promise<ServiceResponse<Tag>> {
-    return this.appService.deleteTag(tag);
-  }
 }

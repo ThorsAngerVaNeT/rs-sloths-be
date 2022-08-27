@@ -43,14 +43,6 @@ export class AppService {
     return this.slothsRepo.updateRating(updateSlothRatingDto);
   }
 
-  async createTag(createTagDto: Tag): Promise<ServiceResponse<Tag>> {
-    return this.slothsRepo.createTag(createTagDto);
-  }
-
-  async deleteTag(tag: Tag): Promise<ServiceResponse<Tag>> {
-    return this.slothsRepo.deleteTag(tag);
-  }
-
   async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
     return this.slothsRepo.getUniqueTags();
   }

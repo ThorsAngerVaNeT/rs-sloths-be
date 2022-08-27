@@ -120,26 +120,6 @@ export class SlothsRepo {
     return { data: { id: slothId, rating: calculatedRating }, status: HttpStatus.OK };
   }
 
-  public async createTag(data: Prisma.TagCreateManyInput): Promise<ServiceResponse<Tag>> {
-    const tag = await this.prisma.tag.create({
-      data,
-    });
-    return { data: tag, status: HttpStatus.CREATED };
-  }
-
-  public async deleteTag(tag: Tag): Promise<ServiceResponse<Tag>> {
-    const where: Prisma.TagWhereUniqueInput = { SlothTag: tag };
-    try {
-      await this.prisma.tag.delete({
-        where,
-      });
-
-      return { status: HttpStatus.NO_CONTENT };
-    } catch (error) {
-      return SlothsRepo.errorHandler(error, 'Tag', tag.value);
-    }
-  }
-
   public async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
     const data = await this.prisma.tag.findMany({ select: { value: true }, distinct: ['value'] });
 
