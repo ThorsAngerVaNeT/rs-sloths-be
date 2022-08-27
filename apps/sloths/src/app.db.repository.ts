@@ -19,8 +19,8 @@ export class SlothsRepo {
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<SlothsAll>> {
     const { page = 1, limit, cursor, where, orderBy } = params;
 
-    const take = limit && +limit ? +limit : undefined;
-    const skip = take && +page ? (page - 1) * take : undefined;
+    const take = limit || undefined;
+    const skip = take ? (page - 1) * take : undefined;
     const conditions = {
       cursor,
       where,
