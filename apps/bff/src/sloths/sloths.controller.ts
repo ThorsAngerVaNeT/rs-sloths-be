@@ -24,6 +24,7 @@ import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { Sloth } from './entities/sloth.entity';
+import { QueryDto } from '../common/query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -47,23 +48,8 @@ export class SlothsController {
 
   @Get()
   @HttpCode(200)
-  async findAll(
-    @Query('_page') page: string,
-    @Query('_limit') limit: string,
-    @Query('filter') filter: string,
-    @Query('order') order: string
-  ) {
-    const sloths = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth[]>>(
-        { cmd: 'get_sloths' },
-        {
-          ...(page && { page: +page }),
-          ...(limit && { limit: +limit }),
-          ...(filter && { where: JSON.parse(filter) }),
-          ...(order && { orderBy: JSON.parse(order) }),
-        }
-      )
-    );
+  async findAll(@Query() queryParams: QueryDto) {
+    const sloths = await firstValueFrom(this.client.send<ServiceResponse<Sloth[]>>({ cmd: 'get_sloths' }, queryParams));
     return sloths.data;
   }
 
