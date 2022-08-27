@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsJSON } from 'class-validator';
 
 export class CreateSlothDto {
   @IsNotEmpty()
@@ -10,5 +10,6 @@ export class CreateSlothDto {
   description: string;
 
   @IsOptional()
-  tags: CreateSlothDto[];
+  @IsJSON()
+  tags: string;
 }
