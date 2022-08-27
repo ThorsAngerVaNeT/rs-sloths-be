@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { Prisma, Sloth } from '@prisma/client';
+import { Prisma, Sloth, Tag } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { GetAllConditions, ServiceResponse, SlothsAll, SlothUserRating, TagsValueList } from './app.interfaces';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
@@ -62,6 +62,7 @@ export class SlothsRepo {
   public async getOne(where: Prisma.SlothWhereUniqueInput): Promise<ServiceResponse<Sloth>> {
     const data = await this.prisma.sloth.findUnique({
       where,
+      include: INCLUDE_TAG,
     });
 
     if (!data) {
@@ -81,7 +82,10 @@ export class SlothsRepo {
 
   public async update(id: string, updateSlothDto: UpdateSlothDto): Promise<ServiceResponse<Sloth>> {
     const { tags, ...restUpdateSlothDto } = updateSlothDto;
-    const dataTags = tags.map((tag) => ({ ...tag, slothId: id }));
+    let dataTags: Tag[] = [];
+    if (tags) {
+      dataTags = tags.map((tag) => ({ ...tag, slothId: id }));
+    }
     const where: Prisma.SlothWhereUniqueInput = { id };
     const data: Prisma.SlothUpdateInput = restUpdateSlothDto;
 
