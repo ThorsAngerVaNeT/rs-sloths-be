@@ -1,8 +1,8 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Request, Response } from 'express';
-import { User } from '../users/entities/user.entity';
+import { Response } from 'express';
+import { RequestWithUser } from '../app.interfaces';
 import { GithubAuthGuard } from './guards/github.guard';
 
 @Controller('auth')
@@ -18,7 +18,7 @@ export class AuthController {
 
   @UseGuards(GithubAuthGuard)
   @Get('github/callback')
-  githubCallback(@Req() req: Request & { user: User }, @Res() res: Response) {
+  githubCallback(@Req() req: RequestWithUser, @Res() res: Response) {
     const { user } = req;
 
     const { createdAt, ...payload } = user;

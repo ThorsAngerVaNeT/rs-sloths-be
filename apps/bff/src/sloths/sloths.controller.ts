@@ -13,13 +13,14 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { PublicFileInterceptor } from '../public-file.interceptor';
-import { ServiceResponse } from '../app.interfaces';
+import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
@@ -50,12 +51,21 @@ export class SlothsController {
 
   @Get()
   @HttpCode(200)
-  async findAll(@Query() queryParams: QueryDto) {
+  async findAll(@Req() req: RequestWithUser, @Query() queryParams: QueryDto) {
+    const {
+      user: { id: userId },
+    } = req;
     const { page, limit, filter, order } = queryParams;
     const sloths = await firstValueFrom(
       this.client.send<ServiceResponse<Sloth[]>>(
         { cmd: 'get_sloths' },
-        { page, limit, ...(filter && { where: JSON.parse(filter) }), ...(order && { orderBy: JSON.parse(order) }) }
+        {
+          page,
+          limit,
+          ...(filter && { where: JSON.parse(filter) }),
+          ...(order && { orderBy: JSON.parse(order) }),
+          userId,
+        }
       )
     );
     return sloths.data;

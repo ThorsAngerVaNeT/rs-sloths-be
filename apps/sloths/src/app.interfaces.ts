@@ -20,6 +20,7 @@ export interface GetAllConditions {
   cursor?: Prisma.SlothWhereUniqueInput;
   where?: Prisma.SlothWhereInput;
   orderBy?: Prisma.SlothOrderByWithRelationInput;
+  userId?: string;
 }
 
 export interface SlothsAll {

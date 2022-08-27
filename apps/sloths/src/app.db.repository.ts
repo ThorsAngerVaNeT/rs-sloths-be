@@ -17,7 +17,7 @@ export class SlothsRepo {
   }
 
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<SlothsAll>> {
-    const { page = 1, limit, cursor, where, orderBy } = params;
+    const { page = 1, limit, cursor, where, orderBy, userId } = params;
 
     const take = limit || undefined;
     const skip = take ? (page - 1) * take : undefined;
@@ -26,6 +26,18 @@ export class SlothsRepo {
       where,
       orderBy,
     };
+    const include: Prisma.SlothInclude = {
+      tags: {
+        select: {
+          value: true,
+        },
+      },
+      ratings: {
+        where: {
+          userId,
+        },
+      },
+    };
 
     const [count, items] = await this.prisma.$transaction([
       this.prisma.sloth.count(conditions),
@@ -33,13 +45,7 @@ export class SlothsRepo {
         ...conditions,
         skip,
         take,
-        include: {
-          tags: {
-            select: {
-              value: true,
-            },
-          },
-        },
+        include,
       }),
     ]);
 
