@@ -61,6 +61,13 @@ export class SlothsController {
     return sloths.data;
   }
 
+  @Get('/tags')
+  @HttpCode(200)
+  async findAllTags() {
+    const tags = await firstValueFrom(this.client.send<ServiceResponse<Tag[]>>({ cmd: 'get_tags' }, {}));
+    return tags.data;
+  }
+
   @Get(':id')
   @HttpCode(200)
   async findOne(@Param('id') id: string) {

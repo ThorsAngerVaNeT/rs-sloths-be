@@ -1,7 +1,7 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { Tag } from '@prisma/client';
-import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, SlothsAll, TagsValueList } from './app.interfaces';
 import { AppService } from './app.service';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
@@ -44,5 +44,10 @@ export class AppController {
     updateSlothRatingDto: UpdateSlothRatingDto
   ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
     return this.appService.updateSlothRating(updateSlothRatingDto);
+  }
+
+  @MessagePattern({ cmd: 'get_tags' })
+  async getTags(): Promise<ServiceResponse<TagsValueList>> {
+    return this.appService.getUniqueTags();
   }
 }

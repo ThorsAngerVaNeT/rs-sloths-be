@@ -44,6 +44,7 @@ export class AppService {
   }
 
   async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
+    console.log('taaaa');
     return this.slothsRepo.getUniqueTags();
   }
 }
