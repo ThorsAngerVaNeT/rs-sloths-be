@@ -25,6 +25,8 @@ import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { Sloth } from './entities/sloth.entity';
 import { QueryDto } from '../common/query.dto';
+import { CreateTagDto } from './dto/create-tag.dto';
+import { Tag } from './entities/tag.entity';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -110,19 +112,27 @@ export class SlothsController {
     return sloth.data;
   }
 
-  @Post(':id/tag')
-  @HttpCode(200)
-  async createTag(@Param('id') id: string, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
+  @Post(':slothId/tag')
+  @HttpCode(201)
+  async createTag(@Param('slothId') slothId: string, @Body() createTagDto: CreateTagDto) {
     const sloth = await firstValueFrom(
-      this.client.send<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>>(
-        { cmd: 'update_rating' },
-        { ...updateSlothRatingDto, slothId: id }
-      )
+      this.client.send<ServiceResponse<Tag>>({ cmd: 'create_tag' }, { ...createTagDto, slothId })
     );
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
     }
 
     return sloth.data;
+  }
+
+  @Delete(':slothId/tag/:tagId')
+  @HttpCode(204)
+  async removeTag(@Param('slothId') slothId: string, @Param('tagId') tagId: string) {
+    const tag = await firstValueFrom(this.client.send<ServiceResponse<Tag>>({ cmd: 'delete_tag' }, { slothId, tagId }));
+    if (tag.error) {
+      throw new HttpException(tag.error, tag.status);
+    }
+
+    return tag.data;
   }
 }

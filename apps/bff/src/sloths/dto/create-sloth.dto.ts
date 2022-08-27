@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateSlothDto {
   @IsNotEmpty()
@@ -8,4 +8,7 @@ export class CreateSlothDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+
+  @IsOptional()
+  tags: CreateSlothDto[];
 }
