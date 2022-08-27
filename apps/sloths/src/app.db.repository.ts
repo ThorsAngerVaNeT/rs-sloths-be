@@ -1,10 +1,18 @@
 import { HttpStatus } from '@nestjs/common';
-import { Prisma, Sloth, Tag } from '@prisma/client';
+import { Prisma, Sloth } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { GetAllConditions, ServiceResponse, SlothsAll, SlothUserRating, TagsValueList } from './app.interfaces';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { PrismaService } from './prisma/prisma.service';
+
+const INCLUDE_TAG = {
+  tags: {
+    select: {
+      value: true,
+    },
+  },
+};
 
 export class SlothsRepo {
   constructor(private prisma: PrismaService) {}
@@ -27,14 +35,13 @@ export class SlothsRepo {
       orderBy,
     };
     const include: Prisma.SlothInclude = {
-      tags: {
-        select: {
-          value: true,
-        },
-      },
+      ...INCLUDE_TAG,
       ratings: {
         where: {
           userId,
+        },
+        select: {
+          rate: true,
         },
       },
     };
@@ -67,6 +74,7 @@ export class SlothsRepo {
   public async create(data: Prisma.SlothCreateInput): Promise<ServiceResponse<Sloth>> {
     const newSloth = await this.prisma.sloth.create({
       data,
+      include: INCLUDE_TAG,
     });
     return { data: newSloth, status: HttpStatus.CREATED };
   }
@@ -84,13 +92,7 @@ export class SlothsRepo {
         this.prisma.sloth.update({
           data,
           where,
-          include: {
-            tags: {
-              select: {
-                value: true,
-              },
-            },
-          },
+          include: INCLUDE_TAG,
         }),
       ]);
 
