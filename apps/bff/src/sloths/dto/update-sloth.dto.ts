@@ -6,4 +6,7 @@ export class UpdateSlothDto extends PartialType(CreateSlothDto) {
   @IsNotEmpty()
   @IsUUID(4)
   id: string;
+
+  @IsNotEmpty()
+  image_url: string;
 }

@@ -67,16 +67,28 @@ export class SlothsRepo {
 
   public async update(id: string, updateSlothDto: UpdateSlothDto): Promise<ServiceResponse<Sloth>> {
     const { tags, ...restUpdateSlothDto } = updateSlothDto;
+    const dataTags = tags.map((tag) => ({ ...tag, slothId: id }));
     const where: Prisma.SlothWhereUniqueInput = { id };
     const data: Prisma.SlothUpdateInput = restUpdateSlothDto;
 
     try {
-      const sloth = await this.prisma.sloth.update({
-        data,
-        where,
-      });
+      const [, , updateSloth] = await this.prisma.$transaction([
+        this.prisma.tag.deleteMany({ where: { slothId: id } }),
+        this.prisma.tag.createMany({ data: dataTags }),
+        this.prisma.sloth.update({
+          data,
+          where,
+          include: {
+            tags: {
+              select: {
+                value: true,
+              },
+            },
+          },
+        }),
+      ]);
 
-      return { data: sloth, status: HttpStatus.CREATED };
+      return { data: updateSloth, status: HttpStatus.OK };
     } catch (error) {
       return SlothsRepo.errorHandler(error, 'Sloth', id);
     }
