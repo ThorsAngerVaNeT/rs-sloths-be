@@ -10,6 +10,8 @@ import {
   UseInterceptors,
   UploadedFile,
   HttpException,
+  HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
@@ -29,7 +31,9 @@ export class SuggestionsController {
 
   @UseInterceptors(PublicFileInterceptor('suggestions/'))
   @Post()
+  @HttpCode(201)
   async create(@UploadedFile() file: Express.Multer.File, @Body() createSuggestionDto: CreateSuggestionDto) {
+    if (!file) throw new BadRequestException('You should provide a file');
     const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>(

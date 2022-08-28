@@ -14,6 +14,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
@@ -42,6 +43,7 @@ export class SlothsController {
   @Post()
   @HttpCode(201)
   async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
+    if (!file) throw new BadRequestException('You should provide a file');
     const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
     const { tags, ...restCreateSlothDto } = createSlothDto;
     const sloth = await firstValueFrom(
