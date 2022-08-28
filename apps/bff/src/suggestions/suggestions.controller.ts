@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import {
   Controller,
   Get,
@@ -12,11 +11,14 @@ import {
   HttpException,
   HttpCode,
   BadRequestException,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { ServiceResponse } from 'src/app.interfaces';
+import { RequestWithUser, ServiceResponse } from 'src/app.interfaces';
+import { QueryDto } from 'src/common/query.dto';
 import { PublicFileInterceptor } from 'src/public-file.interceptor';
 import { CreateSuggestionDto } from './dto/create-suggestion.dto';
 import { Suggestion } from './entities/suggestion.entity';
@@ -49,11 +51,50 @@ export class SuggestionsController {
   }
 
   @Get()
-  findAll() {}
+  @HttpCode(200)
+  async findAll(@Req() req: RequestWithUser, @Query() queryParams: QueryDto) {
+    const {
+      user: { id: userId },
+    } = req;
+    const { page, limit, filter, order } = queryParams;
+    const suggestions = await firstValueFrom(
+      this.client.send<ServiceResponse<Suggestion[]>>(
+        { cmd: 'get_suggestions' },
+        {
+          page,
+          limit,
+          ...(filter && { where: JSON.parse(filter) }),
+          ...(order && { orderBy: JSON.parse(order) }),
+          userId,
+        }
+      )
+    );
+    return suggestions.data;
+  }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {}
+  @HttpCode(200)
+  async findOne(@Param('id') id: string) {
+    const suggestion = await firstValueFrom(
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, id)
+    );
+    if (suggestion.error) {
+      throw new HttpException(suggestion.error, suggestion.status);
+    }
+
+    return suggestion.data;
+  }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {}
+  @HttpCode(204)
+  async remove(@Param('id') id: string) {
+    const suggestion = await firstValueFrom(
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, id)
+    );
+    if (suggestion.error) {
+      throw new HttpException(suggestion.error, suggestion.status);
+    }
+
+    return suggestion.data;
+  }
 }
