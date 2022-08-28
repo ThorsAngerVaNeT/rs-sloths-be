@@ -2,11 +2,11 @@ import { IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
 
 export class UpdateSlothRatingDto {
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUID(4)
   slothId: string;
 
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUID(4)
   userId: string;
 
   @IsNotEmpty()

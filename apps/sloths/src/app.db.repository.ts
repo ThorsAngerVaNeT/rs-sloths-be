@@ -1,28 +1,59 @@
 import { HttpStatus } from '@nestjs/common';
-import { Prisma, Sloth } from '@prisma/client';
+import { Prisma, Sloth, Tag } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { GetAllConditions, ServiceResponse, SlothsAll, SlothUserRating } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, SlothsAll, SlothUserRating, TagsValueList } from './app.interfaces';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { PrismaService } from './prisma/prisma.service';
 
+const INCLUDE_TAG = {
+  tags: {
+    select: {
+      value: true,
+    },
+  },
+};
+
 export class SlothsRepo {
   constructor(private prisma: PrismaService) {}
 
+  static errorHandler(error: Error, entity: string, id: string) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+      return { error: `${entity} "${id}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
+    return { error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+  }
+
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<SlothsAll>> {
-    const { page = 1, limit, cursor, where, orderBy } = params;
+    const { page = 1, limit, cursor, where, orderBy, userId } = params;
 
-    const take = limit && +limit ? +limit : undefined;
-    const skip = take && +page ? (page - 1) * take : undefined;
-
+    const take = limit || undefined;
+    const skip = take ? (page - 1) * take : undefined;
     const conditions = {
       cursor,
       where,
       orderBy,
     };
+    const include: Prisma.SlothInclude = {
+      ...INCLUDE_TAG,
+      ratings: {
+        where: {
+          userId,
+        },
+        select: {
+          rate: true,
+        },
+      },
+    };
+
     const [count, items] = await this.prisma.$transaction([
       this.prisma.sloth.count(conditions),
-      this.prisma.sloth.findMany({ ...conditions, skip, take }),
+      this.prisma.sloth.findMany({
+        ...conditions,
+        skip,
+        take,
+        include,
+      }),
     ]);
 
     return { data: { count, items }, status: HttpStatus.OK };
@@ -31,6 +62,7 @@ export class SlothsRepo {
   public async getOne(where: Prisma.SlothWhereUniqueInput): Promise<ServiceResponse<Sloth>> {
     const data = await this.prisma.sloth.findUnique({
       where,
+      include: INCLUDE_TAG,
     });
 
     if (!data) {
@@ -43,23 +75,34 @@ export class SlothsRepo {
   public async create(data: Prisma.SlothCreateInput): Promise<ServiceResponse<Sloth>> {
     const newSloth = await this.prisma.sloth.create({
       data,
+      include: INCLUDE_TAG,
     });
     return { data: newSloth, status: HttpStatus.CREATED };
   }
 
   public async update(id: string, updateSlothDto: UpdateSlothDto): Promise<ServiceResponse<Sloth>> {
+    const { tags, ...restUpdateSlothDto } = updateSlothDto;
+    let dataTags: Tag[] = [];
+    if (tags) {
+      dataTags = tags.map((tag) => ({ ...tag, slothId: id }));
+    }
     const where: Prisma.SlothWhereUniqueInput = { id };
-    const data: Prisma.SlothUpdateInput = updateSlothDto;
+    const data: Prisma.SlothUpdateInput = restUpdateSlothDto;
 
     try {
-      const sloth = await this.prisma.sloth.update({
-        data,
-        where,
-      });
+      const [, , updateSloth] = await this.prisma.$transaction([
+        this.prisma.tag.deleteMany({ where: { slothId: id } }),
+        this.prisma.tag.createMany({ data: dataTags }),
+        this.prisma.sloth.update({
+          data,
+          where,
+          include: INCLUDE_TAG,
+        }),
+      ]);
 
-      return { data: sloth, status: HttpStatus.CREATED };
+      return { data: updateSloth, status: HttpStatus.OK };
     } catch (error) {
-      return SlothsRepo.errorHandler(error, id);
+      return SlothsRepo.errorHandler(error, 'Sloth', id);
     }
   }
 
@@ -72,7 +115,7 @@ export class SlothsRepo {
 
       return { status: HttpStatus.NO_CONTENT };
     } catch (error) {
-      return SlothsRepo.errorHandler(error, id);
+      return SlothsRepo.errorHandler(error, 'Sloth', id);
     }
   }
 
@@ -101,10 +144,9 @@ export class SlothsRepo {
     return { data: { id: slothId, rating: calculatedRating }, status: HttpStatus.OK };
   }
 
-  static errorHandler(error: Error, id: string) {
-    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-      return { error: `Sloth "${id}" not found!`, status: HttpStatus.NOT_FOUND };
-    }
-    return { error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+  public async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
+    const data = await this.prisma.tag.findMany({ select: { value: true }, distinct: ['value'] });
+
+    return { data, status: HttpStatus.OK };
   }
 }

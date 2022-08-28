@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty } from 'class-validator';
+import { TagsValueList } from 'src/app.interfaces';
 
 export class CreateSlothDto {
   @IsNotEmpty()
@@ -12,4 +13,6 @@ export class CreateSlothDto {
   @IsNotEmpty()
   @IsString()
   image_url: string;
+
+  tags: TagsValueList;
 }

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { Tag } from '@prisma/client';
 import { Sloth } from './entities/sloth.entity';
 import { SlothsRepo } from './app.db.repository';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
-import { GetAllConditions, ServiceResponse, SlothsAll } from './app.interfaces';
+import { GetAllConditions, ServiceResponse, SlothsAll, TagsValueList } from './app.interfaces';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -24,7 +25,8 @@ export class AppService {
   }
 
   async createSloth(createSlothDto: CreateSlothDto): Promise<ServiceResponse<Sloth>> {
-    return this.slothsRepo.create({ ...createSlothDto });
+    const { caption, description, image_url: imageUrl, tags } = createSlothDto;
+    return this.slothsRepo.create({ caption, description, image_url: imageUrl, tags: { create: tags } });
   }
 
   async updateSloth(id: string, updateSlothDto: UpdateSlothDto): Promise<ServiceResponse<Sloth>> {
@@ -39,5 +41,10 @@ export class AppService {
     updateSlothRatingDto: UpdateSlothRatingDto
   ): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
     return this.slothsRepo.updateRating(updateSlothRatingDto);
+  }
+
+  async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
+    console.log('taaaa');
+    return this.slothsRepo.getUniqueTags();
   }
 }

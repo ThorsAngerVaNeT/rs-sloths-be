@@ -4,6 +4,9 @@ import { CreateSlothDto } from './create-sloth.dto';
 
 export class UpdateSlothDto extends PartialType(CreateSlothDto) {
   @IsNotEmpty()
-  @IsUUID()
+  @IsUUID(4)
   id: string;
+
+  @IsNotEmpty()
+  image_url: string;
 }

@@ -12,8 +12,8 @@ export class UsersRepo {
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<UsersAll>> {
     const { page = 1, limit, cursor, where, orderBy } = params;
 
-    const take = limit && +limit ? +limit : undefined;
-    const skip = take && +page ? (page - 1) * take : undefined;
+    const take = limit || undefined;
+    const skip = take ? (page - 1) * take : undefined;
 
     const conditions = {
       cursor,

@@ -16,3 +16,5 @@ export interface UserValidateData {
   name: string;
   github: string | undefined;
 }
+
+export type RequestWithUser = Request & { user: User };
