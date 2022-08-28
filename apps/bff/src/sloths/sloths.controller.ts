@@ -38,7 +38,7 @@ export class SlothsController {
     private configService: ConfigService
   ) {}
 
-  @UseInterceptors(PublicFileInterceptor)
+  @UseInterceptors(PublicFileInterceptor())
   @Post()
   @HttpCode(201)
   async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
@@ -93,7 +93,7 @@ export class SlothsController {
     return sloth.data;
   }
 
-  @UseInterceptors(PublicFileInterceptor)
+  @UseInterceptors(PublicFileInterceptor())
   @Put(':id')
   @HttpCode(200)
   async update(
