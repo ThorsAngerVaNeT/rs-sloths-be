@@ -9,3 +9,31 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Suggestion {
+  id            String                    @id @default(uuid()) @db.Uuid
+  description   String
+  image_url     String
+  userId        String                    @db.Uuid
+  rating        Float                     @default(0)
+  ratings       SuggestionUserRating[]
+  createdAt     DateTime                  @default(now())
+  status        SuggestionStatus          @default(PENDING)
+}
+
+enum SuggestionStatus {
+  PENDING
+  ACCEPTED
+  DECLINE
+}
+
+model SuggestionUserRating {
+  id                String        @id @default(uuid())
+  suggestion        Suggestion    @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
+  suggestionId      String        @db.Uuid
+  userId            String        @db.Uuid
+  rate              Float         @default(0)
+  createdAt         DateTime      @default(now())
+
+  @@unique([suggestionId, userId], name: "SuggestionUser")
+}
