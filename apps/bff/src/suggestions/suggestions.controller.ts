@@ -18,10 +18,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { RequestWithUser, ServiceResponse } from 'src/app.interfaces';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { QueryDto } from 'src/common/query.dto';
-import { PublicFileInterceptor } from 'src/public-file.interceptor';
+import { RequestWithUser, ServiceResponse } from '../app.interfaces';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { QueryDto } from '../common/query.dto';
+import { PublicFileInterceptor } from '../public-file.interceptor';
 import { CreateSuggestionDto } from './dto/create-suggestion.dto';
 import { Suggestion } from './entities/suggestion.entity';
 
