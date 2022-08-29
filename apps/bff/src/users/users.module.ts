@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { SlothsModule } from '../sloths/sloths.module';
 import { UsersController } from './users.controller';
 
 @Module({
@@ -13,6 +14,7 @@ import { UsersController } from './users.controller';
         },
       },
     ]),
+    SlothsModule,
   ],
   controllers: [UsersController],
   providers: [],
