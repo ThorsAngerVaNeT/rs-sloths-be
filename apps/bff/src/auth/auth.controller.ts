@@ -2,6 +2,7 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { Public } from 'src/rbac/public.decorator';
 import { RequestWithUser } from '../app.interfaces';
 import { GithubAuthGuard } from './guards/github.guard';
 
@@ -10,12 +11,14 @@ export class AuthController {
   constructor(private jwtService: JwtService, private configService: ConfigService) {}
 
   // eslint-disable-next-line class-methods-use-this
-  @UseGuards(GithubAuthGuard)
   @Get('github')
+  @Public()
+  @UseGuards(GithubAuthGuard)
   githubLogin() {
     return { msg: 'Github Authentication' };
   }
 
+  @Public()
   @UseGuards(GithubAuthGuard)
   @Get('github/callback')
   githubCallback(@Req() req: RequestWithUser, @Res() res: Response) {
