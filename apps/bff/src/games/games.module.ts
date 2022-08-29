@@ -1,26 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
 import { GamesService } from './games.service';
 import { GamesController } from './games.controller';
+import { createMicroserviceProvider } from '../common/microservices.config';
 
 @Module({
   controllers: [GamesController],
-  providers: [
-    GamesService,
-    {
-      provide: 'GAMES',
-      useFactory: (configService: ConfigService) => {
-        const port = configService.get('GAMES_SERVICE_PORT');
-        return ClientProxyFactory.create({
-          transport: Transport.TCP,
-          options: {
-            port,
-          },
-        });
-      },
-      inject: [ConfigService],
-    },
-  ],
+  providers: [GamesService, createMicroserviceProvider('GAMES')],
+  imports: [],
 })
 export class GamesModule {}
