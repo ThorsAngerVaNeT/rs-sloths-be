@@ -31,6 +31,8 @@ model TodayUserSloth {
   userId        String      @db.Uuid @unique
   slothId       String      @db.Uuid
   updatedAt     DateTime    @updatedAt
+
+  @@unique([slothId, userId], name: "SlothUser")
 }
 
 model Sloth {
