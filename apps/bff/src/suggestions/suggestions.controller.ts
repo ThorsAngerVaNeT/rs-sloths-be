@@ -18,6 +18,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { ParamIdDto } from 'src/common/param-id.dto';
 import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { QueryDto } from '../common/query.dto';
@@ -77,7 +78,7 @@ export class SuggestionsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: ParamIdDto) {
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, id)
     );
@@ -90,7 +91,7 @@ export class SuggestionsController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: ParamIdDto) {
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, id)
     );

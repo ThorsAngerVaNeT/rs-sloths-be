@@ -29,6 +29,7 @@ import { Sloth } from './entities/sloth.entity';
 import { QueryDto } from '../common/query.dto';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entities/tag.entity';
+import { ParamIdDto } from '../common/param-id.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -86,7 +87,7 @@ export class SlothsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: ParamIdDto) {
     const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'get_sloth' }, id));
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
@@ -99,7 +100,7 @@ export class SlothsController {
   @Put(':id')
   @HttpCode(200)
   async update(
-    @Param('id') id: string,
+    @Param('id') id: ParamIdDto,
     @UploadedFile() file: Express.Multer.File,
     @Body() updateSlothDto: UpdateSlothDto
   ) {
@@ -120,7 +121,7 @@ export class SlothsController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: ParamIdDto) {
     const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'delete_sloth' }, id));
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
@@ -131,7 +132,7 @@ export class SlothsController {
 
   @Put(':id/rating')
   @HttpCode(200)
-  async updateRating(@Param('id') id: string, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
+  async updateRating(@Param('id') id: ParamIdDto, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>>(
         { cmd: 'update_rating' },
