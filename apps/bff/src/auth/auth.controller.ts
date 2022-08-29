@@ -32,7 +32,6 @@ export class AuthController {
     res.redirect(`${this.configService.get('FRONT_URL')}`);
   }
 
-  @UseGuards(GithubAuthGuard)
   @Get('github/logout')
   githubLogout(@Res() res: Response) {
     res.clearCookie(`${this.configService.get('COOKIE_NAME')}`);
