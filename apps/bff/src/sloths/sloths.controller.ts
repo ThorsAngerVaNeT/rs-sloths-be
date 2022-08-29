@@ -28,6 +28,7 @@ import { Sloth } from './entities/sloth.entity';
 import { QueryDto } from '../common/query.dto';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entities/tag.entity';
+import { SlothsService } from './sloths.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -35,6 +36,7 @@ export class SlothsController {
   constructor(
     @Inject('SLOTHS')
     private readonly client: ClientProxy,
+    private slothsService: SlothsService,
     private configService: ConfigService
   ) {}
 
@@ -99,12 +101,7 @@ export class SlothsController {
   @Get(':id')
   @HttpCode(200)
   async findOne(@Param('id') id: string) {
-    const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'get_sloth' }, id));
-    if (sloth.error) {
-      throw new HttpException(sloth.error, sloth.status);
-    }
-
-    return sloth.data;
+    return this.slothsService.findOne(id);
   }
 
   @UseInterceptors(PublicFileInterceptor)
