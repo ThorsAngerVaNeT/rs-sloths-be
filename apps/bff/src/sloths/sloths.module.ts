@@ -16,7 +16,7 @@ import { SlothsService } from './sloths.service';
     ]),
   ],
   controllers: [SlothsController],
-  providers: [],
+  providers: [SlothsService],
   exports: [SlothsService],
 })
 export class SlothsModule {}
