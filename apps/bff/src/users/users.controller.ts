@@ -22,6 +22,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { RequestWithUser, ServiceResponse, UsersAll } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
+import { ParamIdDto } from '../common/param-id.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -65,7 +66,7 @@ export class UsersController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: ParamIdDto) {
     const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, id));
     if (user.error) {
       throw new HttpException(user.error, user.status);
@@ -76,7 +77,7 @@ export class UsersController {
 
   @Put(':id')
   @HttpCode(200)
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id') id: ParamIdDto, @Body() updateUserDto: UpdateUserDto) {
     const user = await firstValueFrom(
       this.client.send<ServiceResponse<User>>({ cmd: 'update_user' }, { ...updateUserDto, id })
     );
@@ -89,7 +90,7 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: ParamIdDto) {
     const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'delete_user' }, id));
     if (user.error) {
       throw new HttpException(user.error, user.status);
