@@ -50,6 +50,11 @@ export class SlothsController {
         { ...restCreateSlothDto, ...(tags && { tags }), image_url: imageUrl }
       )
     );
+
+    if (sloth.error) {
+      throw new HttpException(sloth.error, sloth.status);
+    }
+
     return sloth.data;
   }
 
@@ -72,6 +77,11 @@ export class SlothsController {
         }
       )
     );
+
+    if (sloths.error) {
+      throw new HttpException(sloths.error, sloths.status);
+    }
+
     return sloths.data;
   }
 
@@ -79,6 +89,10 @@ export class SlothsController {
   @HttpCode(200)
   async findAllTags() {
     const tags = await firstValueFrom(this.client.send<ServiceResponse<Tag[]>>({ cmd: 'get_tags' }, {}));
+    if (tags.error) {
+      throw new HttpException(tags.error, tags.status);
+    }
+
     return tags.data;
   }
 
