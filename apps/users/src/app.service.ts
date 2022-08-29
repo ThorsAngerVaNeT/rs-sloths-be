@@ -42,4 +42,8 @@ export class AppService {
   async getTodaySloth(where: Prisma.TodayUserSlothWhereUniqueInput): Promise<ServiceResponse<TodayUserSloth>> {
     return this.usersRepo.getTodaySloth(where);
   }
+
+  async updateTodaySloth(data: Prisma.TodayUserSlothCreateManyInput): Promise<ServiceResponse<TodayUserSloth>> {
+    return this.usersRepo.updateTodaySloth(data);
+  }
 }

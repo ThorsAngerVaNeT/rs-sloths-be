@@ -104,4 +104,18 @@ export class UsersRepo {
 
     return { data, status: HttpStatus.OK };
   }
+
+  public async updateTodaySloth(data: Prisma.TodayUserSlothCreateManyInput): Promise<ServiceResponse<TodayUserSloth>> {
+    const result = await this.prisma.todayUserSloth.upsert({
+      where: { SlothUser: data },
+      update: { ...data },
+      create: { ...data },
+    });
+
+    if (!result) {
+      return { error: `User "${data.userId}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
+
+    return { data: result, status: HttpStatus.OK };
+  }
 }
