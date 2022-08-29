@@ -63,6 +63,18 @@ export class UsersController {
     return user;
   }
 
+  @Get('/todaySloth')
+  @HttpCode(200)
+  async findTodaySloth(@Req() req: RequestWithUser) {
+    const { user } = req;
+    const sloth = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_today_sloth' }, user.id));
+    if (sloth.error) {
+      throw new HttpException(sloth.error, sloth.status);
+    }
+
+    return sloth.data;
+  }
+
   @Get(':id')
   @HttpCode(200)
   async findOne(@Param('id') id: string) {
