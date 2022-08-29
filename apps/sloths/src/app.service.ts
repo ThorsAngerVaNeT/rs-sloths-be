@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Tag } from '@prisma/client';
 import { Sloth } from './entities/sloth.entity';
 import { SlothsRepo } from './app.db.repository';
 import { CreateSlothDto } from './dto/create-sloth.dto';
@@ -44,7 +43,6 @@ export class AppService {
   }
 
   async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
-    console.log('taaaa');
     return this.slothsRepo.getUniqueTags();
   }
 }

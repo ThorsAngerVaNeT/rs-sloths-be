@@ -11,6 +11,8 @@ import {
   HttpCode,
   Query,
   UseGuards,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -18,7 +20,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { ServiceResponse, UsersAll } from '../app.interfaces';
+import { RequestWithUser, ServiceResponse, UsersAll } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
 
 @UseGuards(JwtAuthGuard)
@@ -47,6 +49,18 @@ export class UsersController {
       )
     );
     return users.data;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  @Get('/session')
+  @HttpCode(200)
+  async getSession(@Req() req: RequestWithUser) {
+    const { user } = req;
+    if (!user || !user.id) {
+      throw new UnauthorizedException();
+    }
+
+    return user;
   }
 
   @Get(':id')

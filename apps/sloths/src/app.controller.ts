@@ -1,6 +1,5 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { Tag } from '@prisma/client';
 import { GetAllConditions, ServiceResponse, SlothsAll, TagsValueList } from './app.interfaces';
 import { AppService } from './app.service';
 import { CreateSlothDto } from './dto/create-sloth.dto';
