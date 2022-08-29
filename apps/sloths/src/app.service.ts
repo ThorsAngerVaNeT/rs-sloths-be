@@ -23,6 +23,10 @@ export class AppService {
     return this.slothsRepo.getOne(where);
   }
 
+  async getRandomSloth(): Promise<ServiceResponse<Sloth>> {
+    return this.slothsRepo.getRandomSloth();
+  }
+
   async createSloth(createSlothDto: CreateSlothDto): Promise<ServiceResponse<Sloth>> {
     const { caption, description, image_url: imageUrl, tags } = createSlothDto;
     return this.slothsRepo.create({ caption, description, image_url: imageUrl, tags: { create: tags } });
