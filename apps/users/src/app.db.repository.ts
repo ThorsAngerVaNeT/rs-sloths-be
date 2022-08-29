@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, TodayUserSloth, User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { UpdateUserDto } from './dto/update-user-dto';
@@ -91,5 +91,17 @@ export class UsersRepo {
       return { error: `User "${id}" not found!`, status: HttpStatus.NOT_FOUND };
     }
     return { error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+  }
+
+  public async getTodaySloth(where: Prisma.TodayUserSlothWhereUniqueInput): Promise<ServiceResponse<TodayUserSloth>> {
+    const data = await this.prisma.todayUserSloth.findUnique({
+      where,
+    });
+
+    if (!data) {
+      return { error: `User "${where.userId}" not found!`, status: HttpStatus.NOT_FOUND };
+    }
+
+    return { data, status: HttpStatus.OK };
   }
 }
