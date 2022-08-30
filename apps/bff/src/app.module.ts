@@ -17,6 +17,7 @@ import { SuggestionsModule } from './suggestions/suggestions.module';
     AuthModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
+      exclude: ['/auth*', '/users*', '/sloths*', '/suggestions*'],
     }),
     SuggestionsModule,
   ],
