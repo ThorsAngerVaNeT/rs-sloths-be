@@ -14,6 +14,7 @@ import {
   Query,
   Req,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
@@ -24,6 +25,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { QueryDto } from '../common/query.dto';
 import { PublicFileInterceptor } from '../public-file.interceptor';
 import { CreateSuggestionDto } from './dto/create-suggestion.dto';
+import { UpdateSuggestionRatingDto } from './dto/update-suggestion-rating.dto';
 import { Suggestion } from './entities/suggestion.entity';
 
 @UseGuards(JwtAuthGuard)
@@ -104,5 +106,21 @@ export class SuggestionsController {
     }
 
     return suggestion.data;
+  }
+
+  @Put(':id/rating')
+  @HttpCode(200)
+  async updateRating(@Param() paramId: ParamIdDto, @Body() updateSuggestionRatingDto: UpdateSuggestionRatingDto) {
+    const sloth = await firstValueFrom(
+      this.client.send<ServiceResponse<Pick<Suggestion, 'id' | 'rating'>>>(
+        { cmd: 'update_rating' },
+        { ...updateSuggestionRatingDto, slothId: paramId.id }
+      )
+    );
+    if (sloth.error) {
+      throw new HttpException(sloth.error, sloth.status);
+    }
+
+    return sloth.data;
   }
 }
