@@ -13,7 +13,7 @@ datasource db {
 model Suggestion {
   id            String                    @id @default(uuid()) @db.Uuid
   description   String
-  image_url     String
+  image_url     String?
   userId        String                    @db.Uuid
   rating        Float                     @default(0)
   ratings       SuggestionUserRating[]
