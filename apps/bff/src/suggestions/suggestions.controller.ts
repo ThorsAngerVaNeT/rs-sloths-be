@@ -78,9 +78,9 @@ export class SuggestionsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param('id') id: ParamIdDto) {
+  async findOne(@Param() paramId: ParamIdDto) {
     const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, id)
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, paramId.id)
     );
     if (suggestion.error) {
       throw new HttpException(suggestion.error, suggestion.status);
@@ -91,9 +91,9 @@ export class SuggestionsController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: ParamIdDto) {
+  async remove(@Param() paramId: ParamIdDto) {
     const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, id)
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, paramId.id)
     );
     if (suggestion.error) {
       throw new HttpException(suggestion.error, suggestion.status);

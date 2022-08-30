@@ -87,8 +87,8 @@ export class SlothsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param('id') id: ParamIdDto) {
-    const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'get_sloth' }, id));
+  async findOne(@Param() paramId: ParamIdDto) {
+    const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'get_sloth' }, paramId.id));
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
     }
@@ -100,7 +100,7 @@ export class SlothsController {
   @Put(':id')
   @HttpCode(200)
   async update(
-    @Param('id') id: ParamIdDto,
+    @Param() paramId: ParamIdDto,
     @UploadedFile() file: Express.Multer.File,
     @Body() updateSlothDto: UpdateSlothDto
   ) {
@@ -109,7 +109,7 @@ export class SlothsController {
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Sloth>>(
         { cmd: 'update_sloth' },
-        { ...restUpdateSlothDto, ...(tags && { tags }), id, image_url: imageUrl }
+        { ...restUpdateSlothDto, ...(tags && { tags }), id: paramId.id, image_url: imageUrl }
       )
     );
     if (sloth.error) {
@@ -121,8 +121,8 @@ export class SlothsController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: ParamIdDto) {
-    const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'delete_sloth' }, id));
+  async remove(@Param() paramId: ParamIdDto) {
+    const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'delete_sloth' }, paramId.id));
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
     }
@@ -132,11 +132,11 @@ export class SlothsController {
 
   @Put(':id/rating')
   @HttpCode(200)
-  async updateRating(@Param('id') id: ParamIdDto, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
+  async updateRating(@Param() paramId: ParamIdDto, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>>(
         { cmd: 'update_rating' },
-        { ...updateSlothRatingDto, slothId: id }
+        { ...updateSlothRatingDto, slothId: paramId.id }
       )
     );
     if (sloth.error) {
