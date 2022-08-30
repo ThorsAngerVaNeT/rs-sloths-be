@@ -44,7 +44,7 @@ export class SuggestionsController {
     @Body() createSuggestionDto: CreateSuggestionDto
   ) {
     const { user } = req;
-    const imageUrl = file ? `${this.configService.get('BFF_URL')}${file.filename}` : null;
+    const imageUrl = file ? `${this.configService.get('BFF_URL')}suggestions/${file.filename}` : null;
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>(
         { cmd: 'create_suggestion' },
