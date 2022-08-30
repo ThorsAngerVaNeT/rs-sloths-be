@@ -38,13 +38,17 @@ export class SuggestionsController {
   @UseInterceptors(PublicFileInterceptor('suggestions/'))
   @Post()
   @HttpCode(201)
-  async create(@UploadedFile() file: Express.Multer.File, @Body() createSuggestionDto: CreateSuggestionDto) {
-    if (!file) throw new BadRequestException('You should provide a file');
-    const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
+  async create(
+    @Req() req: RequestWithUser,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createSuggestionDto: CreateSuggestionDto
+  ) {
+    const { user } = req;
+    const imageUrl = file ? `${this.configService.get('BFF_URL')}${file.filename}` : null;
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>(
         { cmd: 'create_suggestion' },
-        { createSuggestionDto, image_url: imageUrl }
+        { ...createSuggestionDto, userId: user.id, image_url: imageUrl }
       )
     );
     if (suggestion.error) {
