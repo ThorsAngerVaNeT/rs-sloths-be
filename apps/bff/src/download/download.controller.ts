@@ -8,7 +8,7 @@ export class DownloadController {
 
   @Get(':slothIds')
   @Header('Content-Type', 'application/zip')
-  @Header('Content-Disposition', 'attachment; filename="sloths.zip"')
+  @Header('Content-Disposition', `attachment; filename="sloths_${new Date().toISOString()}.zip"`)
   async findAll(@Param() param: ParamSlothIdsDto) {
     const stream = await this.downloadService.findAll(param);
 
