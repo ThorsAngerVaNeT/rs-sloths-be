@@ -72,6 +72,12 @@ export class SlothsRepo {
     return { data, status: HttpStatus.OK };
   }
 
+  public async getRandomSloth(): Promise<ServiceResponse<Sloth>> {
+    const data: Sloth[] = await this.prisma.$queryRaw`SELECT * FROM "Sloth" ORDER BY RANDOM() LIMIT 1;`;
+
+    return { data: data[0], status: HttpStatus.OK };
+  }
+
   public async create(data: Prisma.SlothCreateInput): Promise<ServiceResponse<Sloth>> {
     const newSloth = await this.prisma.sloth.create({
       data,

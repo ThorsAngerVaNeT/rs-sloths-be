@@ -1,6 +1,6 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { User } from '@prisma/client';
+import { Prisma, TodayUserSloth, User } from '@prisma/client';
 import { GetAllConditions, ServiceResponse, UsersAll } from './app.interfaces';
 import { AppService } from './app.service';
 import { CreateUserDto } from './dto/create-user-dto';
@@ -42,5 +42,15 @@ export class AppController {
   @MessagePattern({ cmd: 'validate' })
   async validateUser(userData: ValidateUserDto): Promise<ServiceResponse<User>> {
     return this.appService.validateUser(userData);
+  }
+
+  @MessagePattern({ cmd: 'get_today_sloth' })
+  async getTodaySloth(id: string): Promise<ServiceResponse<TodayUserSloth>> {
+    return this.appService.getTodaySloth({ userId: id });
+  }
+
+  @MessagePattern({ cmd: 'update_today_sloth' })
+  async updateTodaySloth(data: Prisma.TodayUserSlothCreateManyInput): Promise<ServiceResponse<TodayUserSloth>> {
+    return this.appService.updateTodaySloth(data);
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Prisma, TodayUserSloth, User } from '@prisma/client';
 import { UsersRepo } from './app.db.repository';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
@@ -37,5 +37,13 @@ export class AppService {
 
   async validateUser(userData: ValidateUserDto): Promise<ServiceResponse<User>> {
     return this.usersRepo.validate(userData);
+  }
+
+  async getTodaySloth(where: Prisma.TodayUserSlothWhereUniqueInput): Promise<ServiceResponse<TodayUserSloth>> {
+    return this.usersRepo.getTodaySloth(where);
+  }
+
+  async updateTodaySloth(data: Prisma.TodayUserSlothCreateManyInput): Promise<ServiceResponse<TodayUserSloth>> {
+    return this.usersRepo.updateTodaySloth(data);
   }
 }

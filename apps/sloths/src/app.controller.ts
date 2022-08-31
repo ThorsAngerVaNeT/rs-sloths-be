@@ -49,4 +49,9 @@ export class AppController {
   async getTags(): Promise<ServiceResponse<TagsValueList>> {
     return this.appService.getUniqueTags();
   }
+
+  @MessagePattern({ cmd: 'get_random_sloth' })
+  async getRandomSloth(): Promise<ServiceResponse<Sloth>> {
+    return this.appService.getRandomSloth();
+  }
 }

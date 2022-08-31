@@ -29,6 +29,7 @@ import { Sloth } from './entities/sloth.entity';
 import { QueryDto } from '../common/query.dto';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entities/tag.entity';
+import { SlothsService } from './sloths.service';
 import { ParamIdDto } from '../common/param-id.dto';
 
 @UseGuards(JwtAuthGuard)
@@ -37,6 +38,7 @@ export class SlothsController {
   constructor(
     @Inject('SLOTHS')
     private readonly client: ClientProxy,
+    private slothsService: SlothsService,
     private configService: ConfigService
   ) {}
 
@@ -53,6 +55,11 @@ export class SlothsController {
         { ...restCreateSlothDto, ...(tags && { tags }), image_url: imageUrl }
       )
     );
+
+    if (sloth.error) {
+      throw new HttpException(sloth.error, sloth.status);
+    }
+
     return sloth.data;
   }
 
@@ -75,6 +82,11 @@ export class SlothsController {
         }
       )
     );
+
+    if (sloths.error) {
+      throw new HttpException(sloths.error, sloths.status);
+    }
+
     return sloths.data;
   }
 
@@ -82,18 +94,17 @@ export class SlothsController {
   @HttpCode(200)
   async findAllTags() {
     const tags = await firstValueFrom(this.client.send<ServiceResponse<Tag[]>>({ cmd: 'get_tags' }, {}));
+    if (tags.error) {
+      throw new HttpException(tags.error, tags.status);
+    }
+
     return tags.data;
   }
 
   @Get(':id')
   @HttpCode(200)
   async findOne(@Param() paramId: ParamIdDto) {
-    const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'get_sloth' }, paramId.id));
-    if (sloth.error) {
-      throw new HttpException(sloth.error, sloth.status);
-    }
-
-    return sloth.data;
+    return this.slothsService.findOne(paramId.id);
   }
 
   @UseInterceptors(PublicFileInterceptor())

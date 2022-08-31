@@ -11,15 +11,26 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String    @id @default(uuid()) @db.Uuid
   name          String
   avatar_url    String?
   github        String    @unique
   createdAt     DateTime  @default(now())
   role          Role      @default(USER)
+  todaySloth    TodayUserSloth?
 }
 
 enum Role {
   ADMIN
   USER
+}
+
+model TodayUserSloth {
+  id            String      @id @default(uuid()) @db.Uuid
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String      @db.Uuid @unique
+  slothId       String      @db.Uuid
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([slothId, userId], name: "SlothUser")
 }

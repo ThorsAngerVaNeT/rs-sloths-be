@@ -13,6 +13,8 @@ import {
   UseGuards,
   Req,
   UnauthorizedException,
+  HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -23,13 +25,17 @@ import { User } from './entities/user.entity';
 import { RequestWithUser, ServiceResponse, UsersAll } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
 import { ParamIdDto } from '../common/param-id.dto';
+import { SlothsService } from '../sloths/sloths.service';
+import { TodayUserSloth } from './entities/todayUserSloth.dto';
+import { MS_IN_ONE_DAY } from '../common/constants';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(
     @Inject('USERS')
-    private readonly client: ClientProxy
+    private readonly client: ClientProxy,
+    private readonly slothService: SlothsService
   ) {}
 
   @Post()
@@ -62,6 +68,43 @@ export class UsersController {
     }
 
     return user;
+  }
+
+  @Get('/todaySloth')
+  @HttpCode(200)
+  async findTodaySloth(@Req() req: RequestWithUser) {
+    const { user } = req;
+    const todaySloth = await firstValueFrom(
+      this.client.send<ServiceResponse<TodayUserSloth>>({ cmd: 'get_today_sloth' }, user.id)
+    );
+
+    if (todaySloth.error && todaySloth.status !== HttpStatus.NOT_FOUND) {
+      throw new HttpException(todaySloth.error, todaySloth.status);
+    }
+
+    const isRandomSlothNeeded =
+      todaySloth.status === HttpStatus.NOT_FOUND ||
+      Date.now() - +new Date(todaySloth.data?.updatedAt ?? 0) >= MS_IN_ONE_DAY;
+
+    if (!isRandomSlothNeeded && todaySloth.data?.slothId) {
+      return this.slothService.findOne(todaySloth.data?.slothId);
+    }
+
+    const sloth = await this.slothService.findRandom();
+
+    if (!sloth) throw new NotFoundException();
+
+    const todaySlothUpdate = await firstValueFrom(
+      this.client.send<ServiceResponse<TodayUserSloth>>(
+        { cmd: 'update_today_sloth' },
+        { userId: user.id, slothId: sloth.id }
+      )
+    );
+    if (todaySlothUpdate.error) {
+      throw new HttpException(todaySlothUpdate.error, todaySlothUpdate.status);
+    }
+
+    return sloth;
   }
 
   @Get(':id')

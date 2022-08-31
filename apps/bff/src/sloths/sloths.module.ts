@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { SlothsController } from './sloths.controller';
+import { SlothsService } from './sloths.service';
 
 @Module({
   imports: [],
@@ -20,6 +21,8 @@ import { SlothsController } from './sloths.controller';
       },
       inject: [ConfigService],
     },
+    SlothsService,
   ],
+  exports: [SlothsService],
 })
 export class SlothsModule {}
