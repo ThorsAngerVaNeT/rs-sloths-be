@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { SlothsModule } from './sloths/sloths.module';
 import { AuthModule } from './auth/auth.module';
+import { SuggestionsModule } from './suggestions/suggestions.module';
 
 @Module({
   imports: [
@@ -16,7 +17,9 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
+      exclude: ['/auth*', '/users*', '/sloths*', '/suggestions*'],
     }),
+    SuggestionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

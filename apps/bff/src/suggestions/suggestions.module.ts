@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { SlothsModule } from '../sloths/sloths.module';
-import { UsersController } from './users.controller';
+import { SuggestionsController } from './suggestions.controller';
 
 @Module({
-  imports: [SlothsModule],
-  controllers: [UsersController],
+  imports: [],
+  controllers: [SuggestionsController],
   providers: [
     {
-      provide: 'USERS',
+      provide: 'SUGGESTIONS',
       useFactory: (configService: ConfigService) => {
-        const port = configService.get('USERS_SERVICE_PORT');
+        const port = configService.get('SUGGESTIONS_SERVICE_PORT');
         return ClientProxyFactory.create({
           transport: Transport.TCP,
           options: {
@@ -23,4 +22,4 @@ import { UsersController } from './users.controller';
     },
   ],
 })
-export class UsersModule {}
+export class SuggestionsModule {}

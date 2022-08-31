@@ -1,5 +1,5 @@
 import { IsString, IsNotEmpty } from 'class-validator';
-import { TagsValueList } from 'src/app.interfaces';
+import { TagsValueList } from '../app.interfaces';
 
 export class CreateSlothDto {
   @IsNotEmpty()

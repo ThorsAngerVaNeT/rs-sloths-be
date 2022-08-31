@@ -24,6 +24,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { RequestWithUser, ServiceResponse, UsersAll } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
+import { ParamIdDto } from '../common/param-id.dto';
 import { SlothsService } from '../sloths/sloths.service';
 import { TodayUserSloth } from './entities/todayUserSloth.dto';
 import { MS_IN_ONE_DAY } from '../common/constants';
@@ -108,8 +109,8 @@ export class UsersController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param('id') id: string) {
-    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, id));
+  async findOne(@Param() paramId: ParamIdDto) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, paramId.id));
     if (user.error) {
       throw new HttpException(user.error, user.status);
     }
@@ -119,9 +120,9 @@ export class UsersController {
 
   @Put(':id')
   @HttpCode(200)
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param() paramId: ParamIdDto, @Body() updateUserDto: UpdateUserDto) {
     const user = await firstValueFrom(
-      this.client.send<ServiceResponse<User>>({ cmd: 'update_user' }, { ...updateUserDto, id })
+      this.client.send<ServiceResponse<User>>({ cmd: 'update_user' }, { ...updateUserDto, id: paramId.id })
     );
     if (user.error) {
       throw new HttpException(user.error, user.status);
@@ -132,8 +133,8 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: string) {
-    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'delete_user' }, id));
+  async remove(@Param() paramId: ParamIdDto) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'delete_user' }, paramId.id));
     if (user.error) {
       throw new HttpException(user.error, user.status);
     }

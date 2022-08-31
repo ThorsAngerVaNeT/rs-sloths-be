@@ -22,13 +22,19 @@ export class AuthController {
     const { user } = req;
 
     const { createdAt, ...payload } = user;
-    res.cookie('rs-sloths-cookie', this.jwtService.sign(payload), {
+    res.cookie(`${this.configService.get('COOKIE_NAME')}`, this.jwtService.sign(payload), {
       expires: new Date(Date.now() + +this.configService.get('JWT_EXPIRATION_TIME_MILLISECONDS')),
       httpOnly: true,
       secure: true,
       domain: `${this.configService.get('FRONT_DOMAIN')}`,
       sameSite: 'none',
     });
+    res.redirect(`${this.configService.get('FRONT_URL')}`);
+  }
+
+  @Get('github/logout')
+  githubLogout(@Res() res: Response) {
+    res.clearCookie(`${this.configService.get('COOKIE_NAME')}`);
     res.redirect(`${this.configService.get('FRONT_URL')}`);
   }
 }
