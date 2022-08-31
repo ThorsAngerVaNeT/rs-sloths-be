@@ -18,6 +18,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { join } from 'path';
 import { ParamIdDto } from '../common/param-id.dto';
 import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
@@ -37,7 +38,7 @@ export class SuggestionsController {
     private configService: ConfigService
   ) {}
 
-  @UseInterceptors(PublicFileInterceptor('suggestion-files/'))
+  @UseInterceptors(PublicFileInterceptor('suggestions-files'))
   @Post()
   @HttpCode(201)
   async create(
@@ -46,7 +47,7 @@ export class SuggestionsController {
     @Body() createSuggestionDto: CreateSuggestionDto
   ) {
     const { user } = req;
-    const imageUrl = file ? `suggestion-files/${file.filename}` : null;
+    const imageUrl = file ? join('suggestion-files', file.filename) : null;
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>(
         { cmd: 'create_suggestion' },
