@@ -107,7 +107,7 @@ export class UsersRepo {
 
   public async updateTodaySloth(data: Prisma.TodayUserSlothCreateManyInput): Promise<ServiceResponse<TodayUserSloth>> {
     const result = await this.prisma.todayUserSloth.upsert({
-      where: { SlothUser: data },
+      where: { userId: data.userId },
       update: { ...data },
       create: { ...data },
     });
