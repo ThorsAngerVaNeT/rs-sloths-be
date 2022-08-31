@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { SlothsModule } from './sloths/sloths.module';
 import { AuthModule } from './auth/auth.module';
 import { SuggestionsModule } from './suggestions/suggestions.module';
+import { DownloadModule } from './download/download.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SuggestionsModule } from './suggestions/suggestions.module';
       exclude: ['/auth*', '/users*', '/sloths*', '/suggestions*'],
     }),
     SuggestionsModule,
+    DownloadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
