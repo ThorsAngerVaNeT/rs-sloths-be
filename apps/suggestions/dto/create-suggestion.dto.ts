@@ -1,13 +1,13 @@
-import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsString, IsNotEmpty, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateSuggestionDto {
   @IsNotEmpty()
   @IsString()
   description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  image_url: string;
+  image_url: string | null;
 
   @IsNotEmpty()
   @IsUUID(4)

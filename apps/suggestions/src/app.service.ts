@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma, Suggestion, SuggestionUserRating } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { UpdateStatusDto } from 'dto/update-status.dto';
 import { UpdateSuggestionRatingDto } from 'dto/update-suggestion-rating.dto';
 import { GetAllConditions, ServiceResponse, SuggestionsAll } from './app.interfaces';
 import { PrismaService } from './prisma/prisma.service';
@@ -73,6 +74,22 @@ export class AppService {
       data,
     });
     return { data: newSuggestion, status: HttpStatus.CREATED };
+  }
+
+  public async updateStatus(id: string, updateStatusDto: UpdateStatusDto): Promise<ServiceResponse<Suggestion>> {
+    const where: Prisma.SuggestionWhereUniqueInput = { id };
+    const data: Prisma.SuggestionUpdateInput = updateStatusDto;
+
+    try {
+      const suggestion = await this.prisma.suggestion.update({
+        data,
+        where,
+      });
+
+      return { data: suggestion, status: HttpStatus.OK };
+    } catch (error) {
+      return AppService.errorHandler(error, 'Sloth', id);
+    }
   }
 
   public async delete(id: string): Promise<ServiceResponse<Suggestion>> {

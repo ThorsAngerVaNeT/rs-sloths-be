@@ -14,6 +14,7 @@ import {
   Query,
   Req,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
@@ -24,6 +25,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { QueryDto } from '../common/query.dto';
 import { PublicFileInterceptor } from '../public-file.interceptor';
 import { CreateSuggestionDto } from './dto/create-suggestion.dto';
+import { UpdateSuggestionRatingDto } from './dto/update-suggestion-rating.dto';
+import { UpdateSuggestionDto } from './dto/update-suggestion.dto';
 import { Suggestion } from './entities/suggestion.entity';
 
 @UseGuards(JwtAuthGuard)
@@ -35,16 +38,20 @@ export class SuggestionsController {
     private configService: ConfigService
   ) {}
 
-  @UseInterceptors(PublicFileInterceptor('suggestions/'))
+  @UseInterceptors(PublicFileInterceptor('suggestion-files/'))
   @Post()
   @HttpCode(201)
-  async create(@UploadedFile() file: Express.Multer.File, @Body() createSuggestionDto: CreateSuggestionDto) {
-    if (!file) throw new BadRequestException('You should provide a file');
-    const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
+  async create(
+    @Req() req: RequestWithUser,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createSuggestionDto: CreateSuggestionDto
+  ) {
+    const { user } = req;
+    const imageUrl = file ? `${this.configService.get('BFF_URL')}suggestion-files/${file.filename}` : null;
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>(
         { cmd: 'create_suggestion' },
-        { createSuggestionDto, image_url: imageUrl }
+        { ...createSuggestionDto, userId: user.id, image_url: imageUrl }
       )
     );
     if (suggestion.error) {
@@ -78,9 +85,9 @@ export class SuggestionsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param('id') id: ParamIdDto) {
+  async findOne(@Param() paramId: ParamIdDto) {
     const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, id)
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, paramId.id)
     );
     if (suggestion.error) {
       throw new HttpException(suggestion.error, suggestion.status);
@@ -91,9 +98,41 @@ export class SuggestionsController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: ParamIdDto) {
+  async remove(@Param() paramId: ParamIdDto) {
     const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, id)
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, paramId.id)
+    );
+    if (suggestion.error) {
+      throw new HttpException(suggestion.error, suggestion.status);
+    }
+
+    return suggestion.data;
+  }
+
+  @Put(':id')
+  @HttpCode(200)
+  async updateStatus(@Param() paramId: ParamIdDto, @Body() updateSuggestionDto: UpdateSuggestionDto) {
+    const suggestion = await firstValueFrom(
+      this.client.send<ServiceResponse<Suggestion>>(
+        { cmd: 'update_status' },
+        { ...updateSuggestionDto, id: paramId.id }
+      )
+    );
+    if (suggestion.error) {
+      throw new HttpException(suggestion.error, suggestion.status);
+    }
+
+    return suggestion.data;
+  }
+
+  @Put(':id/rating')
+  @HttpCode(200)
+  async updateRating(@Param() paramId: ParamIdDto, @Body() updateSuggestionRatingDto: UpdateSuggestionRatingDto) {
+    const suggestion = await firstValueFrom(
+      this.client.send<ServiceResponse<Pick<Suggestion, 'id' | 'rating'>>>(
+        { cmd: 'update_rating' },
+        { ...updateSuggestionRatingDto, suggestionId: paramId.id }
+      )
     );
     if (suggestion.error) {
       throw new HttpException(suggestion.error, suggestion.status);

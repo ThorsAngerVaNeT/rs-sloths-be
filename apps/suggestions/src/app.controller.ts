@@ -2,6 +2,7 @@ import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { Suggestion } from '@prisma/client';
 import { CreateSuggestionDto } from 'dto/create-suggestion.dto';
+import { UpdateStatusDto } from 'dto/update-status.dto';
 import { UpdateSuggestionRatingDto } from 'dto/update-suggestion-rating.dto';
 import { GetAllConditions, ServiceResponse, SuggestionsAll } from './app.interfaces';
 import { AppService } from './app.service';
@@ -24,6 +25,12 @@ export class AppController {
   @MessagePattern({ cmd: 'create_suggestion' })
   async createSuggestion(createSuggestionDto: CreateSuggestionDto): Promise<ServiceResponse<Suggestion>> {
     return this.appService.create(createSuggestionDto);
+  }
+
+  @MessagePattern({ cmd: 'update_status' })
+  async updateStatus(updateStatusDto: UpdateStatusDto): Promise<ServiceResponse<Suggestion>> {
+    const { id } = updateStatusDto;
+    return this.appService.updateStatus(id, updateStatusDto);
   }
 
   @MessagePattern({ cmd: 'delete_suggestion' })
