@@ -84,7 +84,7 @@ export class UsersController {
 
     const isRandomSlothNeeded =
       todaySloth.status === HttpStatus.NOT_FOUND ||
-      +new Date(todaySloth.data?.updatedAt ?? 0) - Date.now() >= MS_IN_ONE_DAY;
+      Date.now() - +new Date(todaySloth.data?.updatedAt ?? 0) >= MS_IN_ONE_DAY;
 
     if (!isRandomSlothNeeded && todaySloth.data?.slothId) {
       return this.slothService.findOne(todaySloth.data?.slothId);
