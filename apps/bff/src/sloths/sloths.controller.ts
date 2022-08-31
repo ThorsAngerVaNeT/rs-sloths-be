@@ -47,7 +47,7 @@ export class SlothsController {
   @HttpCode(201)
   async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
     if (!file) throw new BadRequestException('You should provide a file');
-    const imageUrl = `${this.configService.get('BFF_URL')}${file.filename}`;
+    const imageUrl = file.filename;
     const { tags, ...restCreateSlothDto } = createSlothDto;
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Sloth>>(
@@ -97,7 +97,7 @@ export class SlothsController {
     @UploadedFile() file: Express.Multer.File,
     @Body() updateSlothDto: UpdateSlothDto
   ) {
-    const imageUrl = file ? `${this.configService.get('BFF_URL')}${file.filename}` : updateSlothDto.image_url;
+    const imageUrl = file ? file.filename : updateSlothDto.image_url;
     const { tags, ...restUpdateSlothDto } = updateSlothDto;
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Sloth>>(
