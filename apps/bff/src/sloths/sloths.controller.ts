@@ -69,25 +69,7 @@ export class SlothsController {
     const {
       user: { id: userId },
     } = req;
-    const { page, limit, filter, order } = queryParams;
-    const sloths = await firstValueFrom(
-      this.client.send<ServiceResponse<Sloth[]>>(
-        { cmd: 'get_sloths' },
-        {
-          page,
-          limit,
-          ...(filter && { where: JSON.parse(filter) }),
-          ...(order && { orderBy: JSON.parse(order) }),
-          userId,
-        }
-      )
-    );
-
-    if (sloths.error) {
-      throw new HttpException(sloths.error, sloths.status);
-    }
-
-    return sloths.data;
+    return this.slothsService.findAll({ ...queryParams, userId });
   }
 
   @Get('/tags')
