@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppController } from './app.controller';
@@ -16,9 +16,14 @@ import { DownloadModule } from './download/download.module';
     UsersModule,
     SlothsModule,
     AuthModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      exclude: ['/auth*', '/users*', '/sloths*', '/suggestions*'],
+    ServeStaticModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => [
+        {
+          rootPath: join(__dirname, '..', `${configService.get('PUBLIC_FOLDER_PATH')}`),
+          exclude: ['/auth*', '/users*', '/sloths*', '/suggestions*'],
+        },
+      ],
     }),
     SuggestionsModule,
     DownloadModule,
