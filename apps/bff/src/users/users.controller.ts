@@ -22,7 +22,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { RequestWithUser, ServiceResponse, UsersAll } from '../app.interfaces';
+import { RequestWithUser, ServiceResponse, GetAll } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
 import { ParamIdDto } from '../common/param-id.dto';
 import { SlothsService } from '../sloths/sloths.service';
@@ -50,7 +50,7 @@ export class UsersController {
   async findAll(@Query() queryParams: QueryDto) {
     const { page, limit, filter, order } = queryParams;
     const users = await firstValueFrom(
-      this.client.send<ServiceResponse<UsersAll>>(
+      this.client.send<ServiceResponse<GetAll<User>>>(
         { cmd: 'get_users' },
         { page, limit, ...(filter && { where: JSON.parse(filter) }), ...(order && { orderBy: JSON.parse(order) }) }
       )

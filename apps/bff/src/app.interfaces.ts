@@ -6,8 +6,8 @@ export interface ServiceResponse<T> {
   data?: T;
 }
 
-export interface UsersAll {
-  items: User[];
+export interface GetAll<T> {
+  items: T[];
   count: number;
 }
 
