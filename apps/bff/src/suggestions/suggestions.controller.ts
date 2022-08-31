@@ -10,7 +10,6 @@ import {
   UploadedFile,
   HttpException,
   HttpCode,
-  BadRequestException,
   Query,
   Req,
   UseGuards,
@@ -19,7 +18,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { ParamIdDto } from 'src/common/param-id.dto';
+import { ParamIdDto } from '../common/param-id.dto';
 import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { QueryDto } from '../common/query.dto';
