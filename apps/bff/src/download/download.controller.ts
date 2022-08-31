@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Header, Param, Query, StreamableFile } from '@nestjs/common';
 import { DownloadService } from './download.service';
 import { ParamSlothIdsDto } from './dto/param-sloth-ids.dto';
 
@@ -7,7 +7,11 @@ export class DownloadController {
   constructor(private readonly downloadService: DownloadService) {}
 
   @Get(':slothIds')
-  findAll(@Param() param: ParamSlothIdsDto) {
-    return this.downloadService.findAll(param);
+  @Header('Content-Type', 'application/zip')
+  @Header('Content-Disposition', 'attachment; filename="sloths.zip"')
+  async findAll(@Param() param: ParamSlothIdsDto) {
+    const stream = await this.downloadService.findAll(param);
+
+    return new StreamableFile(stream);
   }
 }
