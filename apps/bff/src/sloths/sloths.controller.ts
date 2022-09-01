@@ -15,6 +15,7 @@ import {
   UploadedFile,
   Req,
   BadRequestException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
@@ -30,7 +31,6 @@ import { QueryDto } from '../common/query.dto';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entities/tag.entity';
 import { SlothsService } from './sloths.service';
-import { ParamIdDto } from '../common/param-id.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -85,15 +85,15 @@ export class SlothsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param() paramId: ParamIdDto) {
-    return this.slothsService.findOne(paramId.id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.slothsService.findOne(id);
   }
 
   @UseInterceptors(PublicFileInterceptor())
   @Put(':id')
   @HttpCode(200)
   async update(
-    @Param() paramId: ParamIdDto,
+    @Param('id', ParseUUIDPipe) id: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() updateSlothDto: UpdateSlothDto
   ) {
@@ -102,7 +102,7 @@ export class SlothsController {
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Sloth>>(
         { cmd: 'update_sloth' },
-        { ...restUpdateSlothDto, ...(tags && { tags }), id: paramId.id, image_url: imageUrl }
+        { ...restUpdateSlothDto, ...(tags && { tags }), id, image_url: imageUrl }
       )
     );
     if (sloth.error) {
@@ -114,8 +114,8 @@ export class SlothsController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param() paramId: ParamIdDto) {
-    const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'delete_sloth' }, paramId.id));
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'delete_sloth' }, id));
     if (sloth.error) {
       throw new HttpException(sloth.error, sloth.status);
     }
@@ -125,11 +125,11 @@ export class SlothsController {
 
   @Put(':id/rating')
   @HttpCode(200)
-  async updateRating(@Param() paramId: ParamIdDto, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
+  async updateRating(@Param('id', ParseUUIDPipe) slothId: string, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
     const sloth = await firstValueFrom(
       this.client.send<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>>(
         { cmd: 'update_rating' },
-        { ...updateSlothRatingDto, slothId: paramId.id }
+        { ...updateSlothRatingDto, slothId }
       )
     );
     if (sloth.error) {
