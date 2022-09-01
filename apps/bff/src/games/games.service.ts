@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { ForbiddenException, HttpException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -35,7 +34,7 @@ export class GamesService {
     const { result, userId } = createGameResultDto;
 
     const results = await firstValueFrom(
-      this.client.send<ServiceResponse<GameResult>>({ cmd: 'create_game_results' }, { gameId, result, userId })
+      this.client.send<ServiceResponse<GameResult>>({ cmd: 'create_game_result' }, { gameId, result, userId })
     );
 
     if (results.error) {
@@ -54,10 +53,9 @@ export class GamesService {
       this.client.send<ServiceResponse<GetAll<GameResult>>>(
         { cmd: 'get_game_results' },
         {
-          gameId,
           page,
           limit,
-          ...(filter && { where: JSON.parse(filter) }),
+          ...(filter && { where: { ...JSON.parse(filter), gameId, ...(userIdParam && { userId }) } }),
           ...(order && { orderBy: JSON.parse(order) }),
         }
       )
