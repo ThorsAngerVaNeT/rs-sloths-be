@@ -92,3 +92,18 @@ model SuggestionUserRating {
 
   @@unique([suggestionId, userId], name: "SuggestionUser")
 }
+
+model Game {
+  id            String              @id @default(uuid()) @db.Uuid
+  name          String
+  results       GameResult[]
+}
+
+model GameResult {
+  id            String      @id @default(uuid()) @db.Uuid
+  game          Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId        String      @db.Uuid
+  userId        String
+  result        String
+  createdAt     DateTime    @default(now())
+}

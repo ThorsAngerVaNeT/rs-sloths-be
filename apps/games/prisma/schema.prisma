@@ -9,3 +9,18 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Game {
+  id            String              @id @default(uuid()) @db.Uuid
+  name          String
+  results       GameResult[]
+}
+
+model GameResult {
+  id            String      @id @default(uuid()) @db.Uuid
+  game          Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId        String
+  userId        String
+  result        String
+  createdAt     DateTime    @default(now())
+}
