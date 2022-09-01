@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsJSON, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateGameResultDto {
   @IsNotEmpty()
@@ -6,6 +6,6 @@ export class CreateGameResultDto {
   userId: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsJSON()
   result: string;
 }
