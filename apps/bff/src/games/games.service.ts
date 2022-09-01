@@ -47,7 +47,7 @@ export class GamesService {
   async findAllResults(gameId: string, queryParams: QueryDto & { userId?: string }, userId?: string) {
     const { page, limit, filter, order, userId: userIdParam } = queryParams;
 
-    if (userIdParam !== userId) throw new ForbiddenException();
+    if (userIdParam && userIdParam !== userId) throw new ForbiddenException();
 
     const results = await firstValueFrom(
       this.client.send<ServiceResponse<GetAll<GameResult>>>(
