@@ -55,7 +55,7 @@ export class GamesService {
         {
           page,
           limit,
-          ...(filter && { where: { ...JSON.parse(filter), gameId, ...(userIdParam && { userId }) } }),
+          where: { gameId, ...(filter && JSON.parse(filter)), ...(userIdParam && { userId }) },
           ...(order && { orderBy: JSON.parse(order) }),
         }
       )
