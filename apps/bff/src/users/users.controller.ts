@@ -42,6 +42,10 @@ export class UsersController {
   @HttpCode(201)
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'create_user' }, createUserDto));
+    if (user.error) {
+      throw new HttpException(user.error, user.status);
+    }
+
     return user.data;
   }
 

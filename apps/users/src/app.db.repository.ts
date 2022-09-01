@@ -41,6 +41,10 @@ export class UsersRepo {
   }
 
   public async create(data: Prisma.UserCreateInput): Promise<ServiceResponse<User>> {
+    const user = await this.getOne({ github: data.github });
+
+    if (user.data) return { error: 'This user already exists!', status: HttpStatus.BAD_REQUEST };
+
     const newUser = await this.prisma.user.create({
       data,
     });
