@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { GetAll, ServiceResponse } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
-import { CreateResultDto } from './dto/create-result.dto';
+import { CreateGameResultDto } from './dto/create-game-result.dto';
 import { Game } from './entities/game.entity';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class GamesService {
     return games.data;
   }
 
-  async createResult(gameId: string, createResultDto: CreateResultDto) {
+  async createResult(gameId: string, createGameResultDto: CreateGameResultDto) {
     return 'This action adds a new result';
   }
 

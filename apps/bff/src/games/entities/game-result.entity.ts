@@ -1,4 +1,4 @@
-export class Result {
+export class GameResult {
   id: string;
 
   gameId: string;
