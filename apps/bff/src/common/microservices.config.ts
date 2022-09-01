@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 
-export const createMicroserviceProvider = (name: string) => ({
+const createMicroserviceProvider = (name: string) => ({
   provide: `${name}`,
   useFactory: (configService: ConfigService) => {
     const port = configService.get(`${name}_SERVICE_PORT`);
@@ -14,3 +14,10 @@ export const createMicroserviceProvider = (name: string) => ({
   },
   inject: [ConfigService],
 });
+
+export const MICROSERVICES = Object.fromEntries(
+  ['users', 'sloths', 'suggestions', 'games'].map((service) => [
+    service.toUpperCase(),
+    createMicroserviceProvider(service.toUpperCase()),
+  ])
+);
