@@ -6,4 +6,6 @@ export class GameResult {
   userId: string;
 
   result: string;
+
+  createdAt: Date;
 }

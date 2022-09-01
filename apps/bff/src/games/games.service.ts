@@ -32,7 +32,17 @@ export class GamesService {
   }
 
   async createResult(gameId: string, createGameResultDto: CreateGameResultDto) {
-    return 'This action adds a new result';
+    const { result, userId } = createGameResultDto;
+
+    const results = await firstValueFrom(
+      this.client.send<ServiceResponse<GameResult>>({ cmd: 'create_game_results' }, { gameId, result, userId })
+    );
+
+    if (results.error) {
+      throw new HttpException(results.error, results.status);
+    }
+
+    return results.data;
   }
 
   async findAllResults(gameId: string, queryParams: QueryDto & { userId?: string }, userId?: string) {
