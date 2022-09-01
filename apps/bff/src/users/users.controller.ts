@@ -16,6 +16,7 @@ import {
   HttpStatus,
   NotFoundException,
   ParseUUIDPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -28,6 +29,7 @@ import { QueryDto } from '../common/query.dto';
 import { SlothsService } from '../sloths/sloths.service';
 import { TodayUserSloth } from './entities/todayUserSloth.dto';
 import { MS_IN_ONE_DAY } from '../common/constants';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -72,6 +74,26 @@ export class UsersController {
     }
 
     return user;
+  }
+
+  @Put('/profile')
+  @HttpCode(200)
+  async updateProfile(@Req() req: RequestWithUser, @Body() updateProfileDto: UpdateProfileDto) {
+    const { user } = req;
+    if (!user || !user.id) {
+      throw new UnauthorizedException();
+    }
+
+    if (user.id !== updateProfileDto.id) throw new ForbiddenException();
+
+    const profile = await firstValueFrom(
+      this.client.send<ServiceResponse<User>>({ cmd: 'update_profile' }, { ...updateProfileDto, id: user.id })
+    );
+    if (profile.error) {
+      throw new HttpException(profile.error, profile.status);
+    }
+
+    return profile.data;
   }
 
   @Get('/todaySloth')
