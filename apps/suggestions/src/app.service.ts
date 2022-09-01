@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma, Suggestion, SuggestionUserRating } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { UpdateStatusDto } from 'dto/update-status.dto';
-import { UpdateSuggestionRatingDto } from 'dto/update-suggestion-rating.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
+import { UpdateSuggestionRatingDto } from './dto/update-suggestion-rating.dto';
 import { GetAllConditions, ServiceResponse, SuggestionsAll } from './app.interfaces';
 import { PrismaService } from './prisma/prisma.service';
 

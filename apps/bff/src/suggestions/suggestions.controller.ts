@@ -10,7 +10,6 @@ import {
   UploadedFile,
   HttpException,
   HttpCode,
-  BadRequestException,
   Query,
   Req,
   UseGuards,
@@ -19,7 +18,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { ParamIdDto } from 'src/common/param-id.dto';
+import { join } from 'path';
+import { ParamIdDto } from '../common/param-id.dto';
 import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { QueryDto } from '../common/query.dto';
@@ -38,7 +38,7 @@ export class SuggestionsController {
     private configService: ConfigService
   ) {}
 
-  @UseInterceptors(PublicFileInterceptor('suggestion-files/'))
+  @UseInterceptors(PublicFileInterceptor('suggestions-files'))
   @Post()
   @HttpCode(201)
   async create(
@@ -47,7 +47,7 @@ export class SuggestionsController {
     @Body() createSuggestionDto: CreateSuggestionDto
   ) {
     const { user } = req;
-    const imageUrl = file ? `${this.configService.get('BFF_URL')}suggestion-files/${file.filename}` : null;
+    const imageUrl = file ? join('suggestion-files', file.filename) : null;
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>(
         { cmd: 'create_suggestion' },

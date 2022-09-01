@@ -6,22 +6,22 @@ export class QueryDto {
   @Min(1)
   @Transform(({ value }) => (value ? Number(value) : 1))
   @IsOptional()
-  page: number;
+  page?: number;
 
   @IsInt()
   @Min(0)
   @Type(() => Number)
   @IsOptional()
   @ValidateIf(({ limit }) => limit !== '')
-  limit: number;
+  limit?: number;
 
   @IsJSON()
   @IsOptional()
   @ValidateIf(({ filter }) => filter !== '')
-  filter: string;
+  filter?: string;
 
   @IsJSON()
   @IsOptional()
   @ValidateIf(({ order }) => order !== '')
-  order: string;
+  order?: string;
 }

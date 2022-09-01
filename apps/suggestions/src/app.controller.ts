@@ -1,9 +1,9 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { Suggestion } from '@prisma/client';
-import { CreateSuggestionDto } from 'dto/create-suggestion.dto';
-import { UpdateStatusDto } from 'dto/update-status.dto';
-import { UpdateSuggestionRatingDto } from 'dto/update-suggestion-rating.dto';
+import { CreateSuggestionDto } from './dto/create-suggestion.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
+import { UpdateSuggestionRatingDto } from './dto/update-suggestion-rating.dto';
 import { GetAllConditions, ServiceResponse, SuggestionsAll } from './app.interfaces';
 import { AppService } from './app.service';
 
