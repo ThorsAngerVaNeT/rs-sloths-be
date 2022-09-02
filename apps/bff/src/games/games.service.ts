@@ -45,7 +45,7 @@ export class GamesService {
     return results.data;
   }
 
-  async findAllResults(gameId: string, queryParams: QueryDto & { userId?: string }, user?: User) {
+  async findAllResults(gameId: string, queryParams: QueryDto, user?: User) {
     const { page, limit, filter, order, userId: userIdParam } = queryParams;
 
     if (userIdParam && userIdParam !== user?.id && user?.role !== ROLE.admin) throw new ForbiddenException();

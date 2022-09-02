@@ -32,7 +32,7 @@ export class GamesController {
   async findAllResults(
     @Req() req: RequestWithUser,
     @Param('gameId', ParseUUIDPipe) gameId: string,
-    @Query() queryParams: QueryDto & { userId?: string }
+    @Query() queryParams: QueryDto
   ) {
     const { user } = req;
     return this.gamesService.findAllResults(gameId, queryParams, user);
