@@ -9,6 +9,7 @@ import { SlothsModule } from './sloths/sloths.module';
 import { AuthModule } from './auth/auth.module';
 import { SuggestionsModule } from './suggestions/suggestions.module';
 import { DownloadModule } from './download/download.module';
+import { GamesModule } from './games/games.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DownloadModule } from './download/download.module';
     }),
     SuggestionsModule,
     DownloadModule,
+    GamesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

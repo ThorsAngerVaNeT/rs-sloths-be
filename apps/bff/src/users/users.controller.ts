@@ -15,6 +15,7 @@ import {
   UnauthorizedException,
   HttpStatus,
   NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -24,7 +25,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { RequestWithUser, ServiceResponse, GetAll } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
-import { ParamIdDto } from '../common/param-id.dto';
 import { SlothsService } from '../sloths/sloths.service';
 import { TodayUserSloth } from './entities/todayUserSloth.dto';
 import { MS_IN_ONE_DAY } from '../common/constants';
@@ -109,8 +109,8 @@ export class UsersController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param() paramId: ParamIdDto) {
-    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, paramId.id));
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, id));
     if (user.error) {
       throw new HttpException(user.error, user.status);
     }
@@ -120,9 +120,9 @@ export class UsersController {
 
   @Put(':id')
   @HttpCode(200)
-  async update(@Param() paramId: ParamIdDto, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await firstValueFrom(
-      this.client.send<ServiceResponse<User>>({ cmd: 'update_user' }, { ...updateUserDto, id: paramId.id })
+      this.client.send<ServiceResponse<User>>({ cmd: 'update_user' }, { ...updateUserDto, id })
     );
     if (user.error) {
       throw new HttpException(user.error, user.status);
@@ -133,8 +133,8 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param() paramId: ParamIdDto) {
-    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'delete_user' }, paramId.id));
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'delete_user' }, id));
     if (user.error) {
       throw new HttpException(user.error, user.status);
     }

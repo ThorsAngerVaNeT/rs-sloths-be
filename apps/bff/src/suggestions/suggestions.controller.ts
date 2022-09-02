@@ -14,12 +14,12 @@ import {
   Req,
   UseGuards,
   Put,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { join } from 'path';
-import { ParamIdDto } from '../common/param-id.dto';
 import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { QueryDto } from '../common/query.dto';
@@ -85,9 +85,9 @@ export class SuggestionsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findOne(@Param() paramId: ParamIdDto) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, paramId.id)
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, id)
     );
     if (suggestion.error) {
       throw new HttpException(suggestion.error, suggestion.status);
@@ -98,9 +98,9 @@ export class SuggestionsController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param() paramId: ParamIdDto) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, paramId.id)
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, id)
     );
     if (suggestion.error) {
       throw new HttpException(suggestion.error, suggestion.status);
@@ -111,12 +111,9 @@ export class SuggestionsController {
 
   @Put(':id')
   @HttpCode(200)
-  async updateStatus(@Param() paramId: ParamIdDto, @Body() updateSuggestionDto: UpdateSuggestionDto) {
+  async updateStatus(@Param('id', ParseUUIDPipe) id: string, @Body() updateSuggestionDto: UpdateSuggestionDto) {
     const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>(
-        { cmd: 'update_status' },
-        { ...updateSuggestionDto, id: paramId.id }
-      )
+      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'update_status' }, { ...updateSuggestionDto, id })
     );
     if (suggestion.error) {
       throw new HttpException(suggestion.error, suggestion.status);
@@ -127,11 +124,14 @@ export class SuggestionsController {
 
   @Put(':id/rating')
   @HttpCode(200)
-  async updateRating(@Param() paramId: ParamIdDto, @Body() updateSuggestionRatingDto: UpdateSuggestionRatingDto) {
+  async updateRating(
+    @Param('id', ParseUUIDPipe) suggestionId: string,
+    @Body() updateSuggestionRatingDto: UpdateSuggestionRatingDto
+  ) {
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Pick<Suggestion, 'id' | 'rating'>>>(
         { cmd: 'update_rating' },
-        { ...updateSuggestionRatingDto, suggestionId: paramId.id }
+        { ...updateSuggestionRatingDto, suggestionId }
       )
     );
     if (suggestion.error) {

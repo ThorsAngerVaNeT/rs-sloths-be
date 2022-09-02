@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Param, Query, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Header, Param, Res, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
 import { DownloadService } from './download.service';
 import { ParamSlothIdsDto } from './dto/param-sloth-ids.dto';

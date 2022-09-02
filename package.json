@@ -10,17 +10,19 @@
     "husky": "^8.0.1"
   },
   "scripts": {
-    "start": "concurrently -n w: npm:start:* --restart-tries 5 --restart-after 3000",
+    "start": "concurrently -n w: npm:start:*",
     "start:users": "cd apps/users && npm run start:dev",
     "start:sloths": "cd apps/sloths && npm run start:dev",
     "start:suggestions": "cd apps/suggestions && npm run start:dev",
+    "start:games": "cd apps/games && npm run start:dev",
     "start:bff": "cd apps/bff && npm run start:dev",
     "lint": "lint-staged --relative",
     "lint-conc": "concurrently -n w: npm:lint:*",
     "lint:bff": "cd apps/bff && npm run lint:staged",
     "lint:users": "cd apps/users && npm run lint:staged",
     "lint:sloths": "cd apps/sloths && npm run lint:staged",
-    "lint:suggestions": "cd apps/sloths && npm run lint:staged",
+    "lint:suggestions": "cd apps/suggestions && npm run lint:staged",
+    "lint:games": "cd apps/games && npm run lint:staged",
     "prepare": "husky install"
   },
   "lint-staged": {
