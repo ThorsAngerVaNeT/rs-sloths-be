@@ -2,7 +2,7 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { Public } from 'src/rbac/public.decorator';
+import { Public } from '../rbac/public.decorator';
 import { RequestWithUser } from '../app.interfaces';
 import { Roles } from '../rbac/roles.decorator';
 import { ROLE } from '../users/entities/user.entity';
