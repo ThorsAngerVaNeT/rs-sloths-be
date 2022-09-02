@@ -4,6 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { Public } from 'src/rbac/public.decorator';
 import { RequestWithUser } from '../app.interfaces';
+import { Roles } from '../rbac/roles.decorator';
+import { ROLE } from '../users/entities/user.entity';
 import { GithubAuthGuard } from './guards/github.guard';
 
 @Controller('auth')
@@ -14,13 +16,15 @@ export class AuthController {
   @Get('github')
   @Public()
   @UseGuards(GithubAuthGuard)
+  @Roles(ROLE.admin, ROLE.user)
   githubLogin() {
     return { msg: 'Github Authentication' };
   }
 
+  @Get('github/callback')
   @Public()
   @UseGuards(GithubAuthGuard)
-  @Get('github/callback')
+  @Roles(ROLE.admin, ROLE.user)
   githubCallback(@Req() req: RequestWithUser, @Res() res: Response) {
     const { user } = req;
 
@@ -36,6 +40,7 @@ export class AuthController {
   }
 
   @Get('github/logout')
+  @Roles(ROLE.admin, ROLE.user)
   githubLogout(@Res() res: Response) {
     res.clearCookie(`${this.configService.get('COOKIE_NAME')}`);
     res.redirect(`${this.configService.get('FRONT_URL')}`);

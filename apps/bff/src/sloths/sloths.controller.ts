@@ -31,6 +31,8 @@ import { QueryDto } from '../common/query.dto';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entities/tag.entity';
 import { SlothsService } from './sloths.service';
+import { Roles } from '../rbac/roles.decorator';
+import { ROLE } from '../users/entities/user.entity';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -44,6 +46,7 @@ export class SlothsController {
 
   @UseInterceptors(PublicFileInterceptor())
   @Post()
+  @Roles(ROLE.admin)
   @HttpCode(201)
   async create(@UploadedFile() file: Express.Multer.File, @Body() createSlothDto: CreateSlothDto) {
     if (!file) throw new BadRequestException('You should provide a file');
@@ -64,6 +67,7 @@ export class SlothsController {
   }
 
   @Get()
+  @Roles(ROLE.admin, ROLE.user)
   @HttpCode(200)
   async findAll(@Req() req: RequestWithUser, @Query() queryParams: QueryDto) {
     const {
@@ -73,6 +77,7 @@ export class SlothsController {
   }
 
   @Get('/tags')
+  @Roles(ROLE.admin, ROLE.user)
   @HttpCode(200)
   async findAllTags() {
     const tags = await firstValueFrom(this.client.send<ServiceResponse<Tag[]>>({ cmd: 'get_tags' }, {}));
@@ -84,6 +89,7 @@ export class SlothsController {
   }
 
   @Get(':id')
+  @Roles(ROLE.admin, ROLE.user)
   @HttpCode(200)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.slothsService.findOne(id);
@@ -91,6 +97,7 @@ export class SlothsController {
 
   @UseInterceptors(PublicFileInterceptor())
   @Put(':id')
+  @Roles(ROLE.admin)
   @HttpCode(200)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -113,6 +120,7 @@ export class SlothsController {
   }
 
   @Delete(':id')
+  @Roles(ROLE.admin)
   @HttpCode(204)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     const sloth = await firstValueFrom(this.client.send<ServiceResponse<Sloth>>({ cmd: 'delete_sloth' }, id));
@@ -124,6 +132,7 @@ export class SlothsController {
   }
 
   @Put(':id/rating')
+  @Roles(ROLE.admin, ROLE.user)
   @HttpCode(200)
   async updateRating(@Param('id', ParseUUIDPipe) slothId: string, @Body() updateSlothRatingDto: UpdateSlothRatingDto) {
     const sloth = await firstValueFrom(
@@ -137,29 +146,5 @@ export class SlothsController {
     }
 
     return sloth.data;
-  }
-
-  @Post(':slothId/tag')
-  @HttpCode(201)
-  async createTag(@Param('slothId') slothId: string, @Body() createTagDto: CreateTagDto) {
-    const sloth = await firstValueFrom(
-      this.client.send<ServiceResponse<Tag>>({ cmd: 'create_tag' }, { ...createTagDto, slothId })
-    );
-    if (sloth.error) {
-      throw new HttpException(sloth.error, sloth.status);
-    }
-
-    return sloth.data;
-  }
-
-  @Delete(':slothId/tag/:tagId')
-  @HttpCode(204)
-  async removeTag(@Param('slothId') slothId: string, @Param('tagId') tagId: string) {
-    const tag = await firstValueFrom(this.client.send<ServiceResponse<Tag>>({ cmd: 'delete_tag' }, { slothId, tagId }));
-    if (tag.error) {
-      throw new HttpException(tag.error, tag.status);
-    }
-
-    return tag.data;
   }
 }
