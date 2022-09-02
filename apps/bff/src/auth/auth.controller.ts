@@ -16,7 +16,6 @@ export class AuthController {
   @Get('github')
   @Public()
   @UseGuards(GithubAuthGuard)
-  @Roles(ROLE.admin, ROLE.user)
   githubLogin() {
     return { msg: 'Github Authentication' };
   }
@@ -24,7 +23,6 @@ export class AuthController {
   @Get('github/callback')
   @Public()
   @UseGuards(GithubAuthGuard)
-  @Roles(ROLE.admin, ROLE.user)
   githubCallback(@Req() req: RequestWithUser, @Res() res: Response) {
     const { user } = req;
 
