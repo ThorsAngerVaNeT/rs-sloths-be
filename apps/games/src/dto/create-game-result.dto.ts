@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateGameResultDto {
   @IsNotEmpty()
@@ -10,6 +10,10 @@ export class CreateGameResultDto {
   userId: string;
 
   @IsNotEmpty()
-  @IsString()
-  result: string;
+  @IsNumber()
+  count: number;
+
+  @IsOptional()
+  @IsNumber()
+  time: number;
 }

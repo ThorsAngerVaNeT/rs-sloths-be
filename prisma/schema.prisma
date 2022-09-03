@@ -104,6 +104,7 @@ model GameResult {
   game          Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId        String      @db.Uuid
   userId        String
-  result        String
+  count         Int         @default(0)
+  time          Int?         
   createdAt     DateTime    @default(now())
 }
