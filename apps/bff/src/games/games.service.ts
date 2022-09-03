@@ -32,10 +32,10 @@ export class GamesService {
   }
 
   async createResult(gameId: string, createGameResultDto: CreateGameResultDto) {
-    const { result, userId } = createGameResultDto;
+    const { count, time, userId } = createGameResultDto;
 
     const results = await firstValueFrom(
-      this.client.send<ServiceResponse<GameResult>>({ cmd: 'create_game_result' }, { gameId, result, userId })
+      this.client.send<ServiceResponse<GameResult>>({ cmd: 'create_game_result' }, { gameId, count, time, userId })
     );
 
     if (results.error) {
