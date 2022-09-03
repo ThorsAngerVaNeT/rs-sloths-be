@@ -15,7 +15,7 @@ export class Suggestion {
 }
 
 export enum SuggestionStatus {
-  PENDING,
-  ACCEPTED,
-  DECLINE,
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  DECLINE = 'DECLINE',
 }

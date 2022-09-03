@@ -25,13 +25,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ROLE, User } from './entities/user.entity';
 import { RequestWithUser, ServiceResponse, GetAll } from '../app.interfaces';
-import { QueryDto } from '../common/query.dto';
 import { SlothsService } from '../sloths/sloths.service';
 import { TodayUserSloth } from './entities/todayUserSloth.dto';
 import { MS_IN_ONE_DAY } from '../common/constants';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Roles } from '../rbac/roles.decorator';
 import { getWhere } from '../common/utils';
+import { UsersQueryDto } from './dto/query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -57,7 +57,7 @@ export class UsersController {
   @Get()
   @Roles(ROLE.admin)
   @HttpCode(200)
-  async findAll(@Query() queryParams: QueryDto) {
+  async findAll(@Query() queryParams: UsersQueryDto) {
     const { page, limit, filter: filterValues = [], order, searchText } = queryParams;
 
     const where = getWhere({
