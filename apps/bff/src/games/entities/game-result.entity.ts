@@ -5,7 +5,9 @@ export class GameResult {
 
   userId: string;
 
-  result: string;
+  count: number;
+
+  time: number;
 
   createdAt: Date;
 }
