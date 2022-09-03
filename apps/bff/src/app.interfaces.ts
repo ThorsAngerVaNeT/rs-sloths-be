@@ -28,7 +28,18 @@ export interface GetAllConditions {
   gameId?: string;
 }
 
-export type WhereFieldName = 'name' | 'github' | 'caption' | 'description' | 'tags' | 'userId' | 'gameId';
+export type WhereFieldName =
+  | 'name'
+  | 'github'
+  | 'caption'
+  | 'description'
+  | 'tags'
+  | 'value'
+  | 'userId'
+  | 'gameId'
+  | 'role'
+  | 'id'
+  | 'status';
 
 type WhereFieldContains = {
   [keyof in WhereFieldName]?: { contains: string; mode: string };
@@ -44,7 +55,7 @@ export type WhereFieldFilter = { OR: WhereField[] };
 
 export interface GetWhereInput {
   searchText?: string;
-  searchFields?: string[];
+  searchFields?: WhereFieldName[];
   filterValues?: string[];
-  filterFields?: string[];
+  filterFields?: WhereFieldName[] | [WhereFieldName, WhereFieldName][];
 }

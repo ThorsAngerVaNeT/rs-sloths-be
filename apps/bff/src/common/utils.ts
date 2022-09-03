@@ -28,13 +28,6 @@ export const getANDFields = (fields: (WhereFieldFilter | WhereField | null)[]) =
 };
 
 export const getWhere = ({ searchText, searchFields, filterValues, filterFields }: GetWhereInput) => {
-  console.log(
-    'searchText, searchFields, filterValues, filterFields: ',
-    searchText,
-    searchFields,
-    filterValues,
-    filterFields
-  );
   const search: WhereFieldFilter | WhereField | null =
     searchText && searchFields
       ? getORFields(searchFields.map((field) => getSearchStringWhereProperty(field, searchText)))
@@ -42,7 +35,17 @@ export const getWhere = ({ searchText, searchFields, filterValues, filterFields 
 
   const select: WhereFieldFilter | WhereField | null =
     filterValues?.length && filterFields?.length
-      ? getORFields(filterFields.map((field) => getFilterInWhereProperty(field, filterValues)))
+      ? getORFields(
+          filterFields.map((field) => {
+            if (typeof field === 'string') {
+              return getFilterInWhereProperty(field, filterValues);
+            }
+            const [nested, nestedField] = field;
+            return {
+              [nested]: { some: { ...getFilterInWhereProperty(nestedField, filterValues) } },
+            };
+          })
+        )
       : null;
 
   return getANDFields([search, select]);

@@ -2,7 +2,6 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { GetAll, GetAllConditions, ServiceResponse } from '../app.interfaces';
-import { QueryDto } from '../common/query.dto';
 import { Sloth } from './entities/sloth.entity';
 
 @Injectable()

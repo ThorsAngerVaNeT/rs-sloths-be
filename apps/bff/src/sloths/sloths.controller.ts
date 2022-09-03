@@ -78,8 +78,9 @@ export class SlothsController {
       searchText,
       searchFields: ['caption', 'description'],
       filterValues,
-      filterFields: ['tags'],
+      filterFields: [['tags', 'value']],
     });
+
     const conditions = {
       page,
       limit,
