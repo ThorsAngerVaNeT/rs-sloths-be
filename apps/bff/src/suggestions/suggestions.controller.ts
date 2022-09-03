@@ -73,10 +73,10 @@ export class SuggestionsController {
       user: { id: userId },
     } = req;
 
-    const { page, limit, filter: filterValues = [], order, searchString } = queryParams;
+    const { page, limit, filter: filterValues = [], order, searchText } = queryParams;
 
     const where = getWhere({
-      searchString,
+      searchText,
       searchFields: ['description'],
       filterValues,
       filterFields: ['status'],

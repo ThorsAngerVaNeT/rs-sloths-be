@@ -21,7 +21,7 @@ export class QueryDto {
 
   @IsString()
   @IsOptional()
-  searchString: string;
+  searchText: string;
 
   @IsJSON()
   @IsOptional()

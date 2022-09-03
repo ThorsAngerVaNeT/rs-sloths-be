@@ -17,9 +17,9 @@ export class GamesService {
   ) {}
 
   async findAll(queryParams: QueryDto) {
-    const { page, limit, order, searchString } = queryParams;
+    const { page, limit, order, searchText } = queryParams;
 
-    const where = getWhere({ searchString, searchFields: ['name'] });
+    const where = getWhere({ searchText, searchFields: ['name'] });
 
     const games = await firstValueFrom(
       this.client.send<ServiceResponse<GetAll<Game>>>(

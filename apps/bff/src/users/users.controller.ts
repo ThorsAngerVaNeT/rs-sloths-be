@@ -58,10 +58,10 @@ export class UsersController {
   @Roles(ROLE.admin)
   @HttpCode(200)
   async findAll(@Query() queryParams: QueryDto) {
-    const { page, limit, filter: filterValues = [], order, searchString } = queryParams;
+    const { page, limit, filter: filterValues = [], order, searchText } = queryParams;
 
     const where = getWhere({
-      searchString,
+      searchText,
       searchFields: ['name', 'github'],
       filterValues,
       filterFields: ['role'],

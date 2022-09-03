@@ -27,10 +27,17 @@ export const getANDFields = (fields: (WhereFieldFilter | WhereField | null)[]) =
   return { AND: arr };
 };
 
-export const getWhere = ({ searchString, searchFields, filterValues, filterFields }: GetWhereInput) => {
+export const getWhere = ({ searchText, searchFields, filterValues, filterFields }: GetWhereInput) => {
+  console.log(
+    'searchText, searchFields, filterValues, filterFields: ',
+    searchText,
+    searchFields,
+    filterValues,
+    filterFields
+  );
   const search: WhereFieldFilter | WhereField | null =
-    searchString && searchFields
-      ? getORFields(searchFields.map((field) => getSearchStringWhereProperty(field, searchString)))
+    searchText && searchFields
+      ? getORFields(searchFields.map((field) => getSearchStringWhereProperty(field, searchText)))
       : null;
 
   const select: WhereFieldFilter | WhereField | null =
