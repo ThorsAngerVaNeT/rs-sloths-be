@@ -13,5 +13,6 @@ export class UsersQueryDto extends OmitType(QueryDto, ['filter', 'order']) {
   filter?: ROLE[];
 
   @IsIn(orderValues)
+  @IsOptional()
   order?: string;
 }

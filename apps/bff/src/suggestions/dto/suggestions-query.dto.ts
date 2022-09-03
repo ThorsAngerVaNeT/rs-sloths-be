@@ -14,5 +14,6 @@ export class SuggestionsQueryDto extends OmitType(QueryDto, ['filter', 'order'])
   filter?: SuggestionStatus[];
 
   @IsIn(orderValues)
+  @IsOptional()
   order?: string;
 }
