@@ -59,3 +59,10 @@ export interface GetWhereInput {
   filterValues?: string[];
   filterFields?: WhereFieldName[] | [WhereFieldName, WhereFieldName][];
 }
+
+export type OrderBy = { [keyof: string]: string };
+
+export enum OrderDirections {
+  asc = 'asc',
+  desc = 'desc',
+}

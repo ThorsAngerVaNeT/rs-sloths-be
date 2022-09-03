@@ -1,4 +1,4 @@
-import { GetWhereInput, WhereField, WhereFieldFilter } from '../app.interfaces';
+import { GetWhereInput, OrderBy, OrderDirections, WhereField, WhereFieldFilter } from '../app.interfaces';
 
 export const getSearchStringWhereProperty = (field: string, value: string): WhereField => ({
   [field]: {
@@ -49,4 +49,14 @@ export const getWhere = ({ searchText, searchFields, filterValues, filterFields 
       : null;
 
   return getANDFields([search, select]);
+};
+
+export const getOrdersArray = (fields: string[]): string[] =>
+  fields.map((field: string) => [`${field}-${OrderDirections.asc}`, `${field}-${OrderDirections.desc}`]).flat();
+
+export const getOrderBy = (order: string): OrderBy | undefined => {
+  if (!order) return undefined;
+
+  const [field, direction] = order.split('-');
+  return { [field]: direction };
 };

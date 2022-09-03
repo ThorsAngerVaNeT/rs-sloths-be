@@ -2,10 +2,11 @@ import { ForbiddenException, HttpException, Inject, Injectable } from '@nestjs/c
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { GetAll, ServiceResponse, WhereFieldEquals } from '../app.interfaces';
-import { QueryDto } from '../common/query.dto';
-import { getWhere } from '../common/utils';
+import { getOrderBy, getWhere } from '../common/utils';
 import { ROLE, User } from '../users/entities/user.entity';
 import { CreateGameResultDto } from './dto/create-game-result.dto';
+import { GameQueryDto } from './dto/game-query.dto';
+import { GameResultQueryDto } from './dto/game-result-query.dto';
 import { GameResult } from './entities/game-result.entity';
 import { Game } from './entities/game.entity';
 
@@ -16,15 +17,17 @@ export class GamesService {
     private readonly client: ClientProxy
   ) {}
 
-  async findAll(queryParams: QueryDto) {
-    const { page, limit, order, searchText } = queryParams;
+  async findAll(queryParams: GameQueryDto) {
+    const { page, limit, order = '', searchText } = queryParams;
 
     const where = getWhere({ searchText, searchFields: ['name'] });
+
+    const orderBy = getOrderBy(order);
 
     const games = await firstValueFrom(
       this.client.send<ServiceResponse<GetAll<Game>>>(
         { cmd: 'get_games' },
-        { page, limit, ...(where && { where }), ...(order && { orderBy: JSON.parse(order) }) }
+        { page, limit, ...(where && { where }), ...(orderBy && { orderBy }) }
       )
     );
 
@@ -49,8 +52,8 @@ export class GamesService {
     return results.data;
   }
 
-  async findAllResults(gameId: string, queryParams: QueryDto, user?: User) {
-    const { page, limit, order, userId: userIdParam } = queryParams;
+  async findAllResults(gameId: string, queryParams: GameResultQueryDto, user?: User) {
+    const { page, limit, order = '', userId: userIdParam } = queryParams;
 
     if (userIdParam && userIdParam !== user?.id && user?.role !== ROLE.admin) throw new ForbiddenException();
 
@@ -59,6 +62,8 @@ export class GamesService {
       where.userId = user?.id;
     }
 
+    const orderBy = getOrderBy(order);
+
     const results = await firstValueFrom(
       this.client.send<ServiceResponse<GetAll<GameResult>>>(
         { cmd: 'get_game_results' },
@@ -66,7 +71,7 @@ export class GamesService {
           page,
           limit,
           where,
-          ...(order && { orderBy: JSON.parse(order) }),
+          ...(orderBy && { orderBy }),
         }
       )
     );

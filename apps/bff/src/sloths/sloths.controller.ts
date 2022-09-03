@@ -32,7 +32,7 @@ import { Tag } from './entities/tag.entity';
 import { SlothsService } from './sloths.service';
 import { Roles } from '../rbac/roles.decorator';
 import { ROLE } from '../users/entities/user.entity';
-import { getWhere } from '../common/utils';
+import { getOrderBy, getWhere } from '../common/utils';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -72,7 +72,7 @@ export class SlothsController {
     const {
       user: { id: userId },
     } = req;
-    const { page, limit, filter: filterValues = [], order, searchText } = queryParams;
+    const { page, limit, filter: filterValues = [], order = '', searchText } = queryParams;
 
     const where = getWhere({
       searchText,
@@ -81,11 +81,13 @@ export class SlothsController {
       filterFields: [['tags', 'value']],
     });
 
+    const orderBy = getOrderBy(order);
+
     const conditions = {
       page,
       limit,
       ...(where && { where }),
-      ...(order && { orderBy: JSON.parse(order) }),
+      ...(orderBy && { orderBy }),
       userId,
     };
 

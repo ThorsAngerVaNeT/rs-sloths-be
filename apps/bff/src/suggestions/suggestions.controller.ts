@@ -28,8 +28,8 @@ import { UpdateSuggestionDto } from './dto/update-suggestion.dto';
 import { Suggestion } from './entities/suggestion.entity';
 import { ROLE } from '../users/entities/user.entity';
 import { Roles } from '../rbac/roles.decorator';
-import { getWhere } from '../common/utils';
-import { SuggestionsQueryDto } from './dto/query.dto';
+import { getOrderBy, getWhere } from '../common/utils';
+import { SuggestionsQueryDto } from './dto/suggestions-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('suggestions')
@@ -71,7 +71,7 @@ export class SuggestionsController {
       user: { id: userId },
     } = req;
 
-    const { page, limit, filter: filterValues = [], order, searchText } = queryParams;
+    const { page, limit, filter: filterValues = [], order = '', searchText } = queryParams;
 
     const where = getWhere({
       searchText,
@@ -79,11 +79,14 @@ export class SuggestionsController {
       filterValues,
       filterFields: ['status'],
     });
+
+    const orderBy = getOrderBy(order);
+
     const conditions = {
       page,
       limit,
       ...(where && { where }),
-      ...(order && { orderBy: JSON.parse(order) }),
+      ...(orderBy && { orderBy }),
       userId,
     };
 
