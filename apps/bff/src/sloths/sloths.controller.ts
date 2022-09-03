@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import {
   Controller,
   Get,
@@ -17,7 +18,6 @@ import {
   BadRequestException,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
@@ -28,11 +28,11 @@ import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
 import { Sloth } from './entities/sloth.entity';
 import { QueryDto } from '../common/query.dto';
-import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entities/tag.entity';
 import { SlothsService } from './sloths.service';
 import { Roles } from '../rbac/roles.decorator';
 import { ROLE } from '../users/entities/user.entity';
+import { getWhere } from '../common/utils';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -40,8 +40,7 @@ export class SlothsController {
   constructor(
     @Inject('SLOTHS')
     private readonly client: ClientProxy,
-    private slothsService: SlothsService,
-    private configService: ConfigService
+    private slothsService: SlothsService
   ) {}
 
   @UseInterceptors(PublicFileInterceptor())
@@ -73,7 +72,23 @@ export class SlothsController {
     const {
       user: { id: userId },
     } = req;
-    return this.slothsService.findAll({ ...queryParams, userId });
+    const { page, limit, filter: filterValues = [], order, searchString } = queryParams;
+
+    const where = getWhere({
+      searchString,
+      searchFields: ['caption', 'description'],
+      filterValues,
+      filterFields: ['tags'],
+    });
+    const conditions = {
+      page,
+      limit,
+      ...(where && { where }),
+      ...(order && { orderBy: JSON.parse(order) }),
+      userId,
+    };
+
+    return this.slothsService.findAll(conditions);
   }
 
   @Get('/tags')

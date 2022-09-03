@@ -1,4 +1,4 @@
-import { WhereField, WhereFieldFilter } from '../app.interfaces';
+import { GetWhereInput, WhereField, WhereFieldFilter } from '../app.interfaces';
 
 export const getSearchStringWhereProperty = (field: string, value: string): WhereField => ({
   [field]: {
@@ -27,19 +27,16 @@ export const getANDFields = (fields: (WhereFieldFilter | WhereField | null)[]) =
   return { AND: arr };
 };
 
-export const getWhere = (
-  searchText: string,
-  searchFields: string[],
-  filterValues: string[],
-  filterFields: string[]
-) => {
-  const search: WhereFieldFilter | WhereField | null = searchText
-    ? getORFields(searchFields.map((field) => getSearchStringWhereProperty(field, searchText)))
-    : null;
+export const getWhere = ({ searchString, searchFields, filterValues, filterFields }: GetWhereInput) => {
+  const search: WhereFieldFilter | WhereField | null =
+    searchString && searchFields
+      ? getORFields(searchFields.map((field) => getSearchStringWhereProperty(field, searchString)))
+      : null;
 
-  const select: WhereFieldFilter | WhereField | null = filterValues.length
-    ? getORFields(filterFields.map((field) => getFilterInWhereProperty(field, filterValues)))
-    : null;
+  const select: WhereFieldFilter | WhereField | null =
+    filterValues?.length && filterFields?.length
+      ? getORFields(filterFields.map((field) => getFilterInWhereProperty(field, filterValues)))
+      : null;
 
   return getANDFields([search, select]);
 };

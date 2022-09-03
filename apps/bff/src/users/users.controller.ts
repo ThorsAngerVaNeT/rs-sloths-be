@@ -31,6 +31,7 @@ import { TodayUserSloth } from './entities/todayUserSloth.dto';
 import { MS_IN_ONE_DAY } from '../common/constants';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Roles } from '../rbac/roles.decorator';
+import { getWhere } from '../common/utils';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -57,11 +58,19 @@ export class UsersController {
   @Roles(ROLE.admin)
   @HttpCode(200)
   async findAll(@Query() queryParams: QueryDto) {
-    const { page, limit, filter, order } = queryParams;
+    const { page, limit, filter: filterValues = [], order, searchString } = queryParams;
+
+    const where = getWhere({
+      searchString,
+      searchFields: ['name', 'github'],
+      filterValues,
+      filterFields: ['role'],
+    });
+
     const users = await firstValueFrom(
       this.client.send<ServiceResponse<GetAll<User>>>(
         { cmd: 'get_users' },
-        { page, limit, ...(filter && { where: JSON.parse(filter) }), ...(order && { orderBy: JSON.parse(order) }) }
+        { page, limit, ...(where && { where }), ...(order && { orderBy: JSON.parse(order) }) }
       )
     );
     return users.data;

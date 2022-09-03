@@ -1,7 +1,7 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { GetAll, ServiceResponse } from '../app.interfaces';
+import { GetAll, GetAllConditions, ServiceResponse } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
 import { Sloth } from './entities/sloth.entity';
 
@@ -12,19 +12,9 @@ export class SlothsService {
     private readonly client: ClientProxy
   ) {}
 
-  async findAll(queryParams: QueryDto): Promise<GetAll<Sloth> | undefined> {
-    const { page, limit, filter, order, userId } = queryParams;
+  async findAll(conditions: GetAllConditions): Promise<GetAll<Sloth> | undefined> {
     const sloths = await firstValueFrom(
-      this.client.send<ServiceResponse<GetAll<Sloth>>>(
-        { cmd: 'get_sloths' },
-        {
-          page,
-          limit,
-          ...(filter && { where: JSON.parse(filter) }),
-          ...(order && { orderBy: JSON.parse(order) }),
-          userId,
-        }
-      )
+      this.client.send<ServiceResponse<GetAll<Sloth>>>({ cmd: 'get_sloths' }, conditions)
     );
 
     if (sloths.error) {

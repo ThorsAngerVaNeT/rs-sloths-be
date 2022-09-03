@@ -30,6 +30,7 @@ import { UpdateSuggestionDto } from './dto/update-suggestion.dto';
 import { Suggestion } from './entities/suggestion.entity';
 import { ROLE } from '../users/entities/user.entity';
 import { Roles } from '../rbac/roles.decorator';
+import { getWhere } from '../common/utils';
 
 @UseGuards(JwtAuthGuard)
 @Controller('suggestions')
@@ -71,18 +72,25 @@ export class SuggestionsController {
     const {
       user: { id: userId },
     } = req;
-    const { page, limit, filter, order } = queryParams;
+
+    const { page, limit, filter: filterValues = [], order, searchString } = queryParams;
+
+    const where = getWhere({
+      searchString,
+      searchFields: ['description'],
+      filterValues,
+      filterFields: ['status'],
+    });
+    const conditions = {
+      page,
+      limit,
+      ...(where && { where }),
+      ...(order && { orderBy: JSON.parse(order) }),
+      userId,
+    };
+
     const suggestions = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion[]>>(
-        { cmd: 'get_suggestions' },
-        {
-          page,
-          limit,
-          ...(filter && { where: JSON.parse(filter) }),
-          ...(order && { orderBy: JSON.parse(order) }),
-          userId,
-        }
-      )
+      this.client.send<ServiceResponse<Suggestion[]>>({ cmd: 'get_suggestions' }, conditions)
     );
     return suggestions.data;
   }

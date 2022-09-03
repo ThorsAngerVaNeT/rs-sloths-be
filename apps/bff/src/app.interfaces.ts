@@ -41,3 +41,10 @@ export type WhereFieldEquals = {
 export type WhereField = WhereFieldContains | WhereFieldEquals;
 
 export type WhereFieldFilter = { OR: WhereField[] };
+
+export interface GetWhereInput {
+  searchString?: string;
+  searchFields?: string[];
+  filterValues?: string[];
+  filterFields?: string[];
+}
