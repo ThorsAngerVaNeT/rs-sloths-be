@@ -18,3 +18,26 @@ export interface UserValidateData {
 }
 
 export type RequestWithUser = Request & { user: User };
+
+export interface GetAllConditions {
+  page?: number;
+  limit?: number;
+  where?: Record<string, unknown>;
+  orderBy?: Record<string, unknown>;
+  userId?: string;
+  gameId?: string;
+}
+
+export type WhereFieldName = 'name' | 'github' | 'caption' | 'description' | 'tags' | 'userId' | 'gameId';
+
+type WhereFieldContains = {
+  [keyof in WhereFieldName]?: { contains: string; mode: string };
+};
+
+export type WhereFieldEquals = {
+  [keyof in WhereFieldName]?: string;
+};
+
+export type WhereField = WhereFieldContains | WhereFieldEquals;
+
+export type WhereFieldFilter = { OR: WhereField[] };
