@@ -28,6 +28,8 @@ import { CreateSuggestionDto } from './dto/create-suggestion.dto';
 import { UpdateSuggestionRatingDto } from './dto/update-suggestion-rating.dto';
 import { UpdateSuggestionDto } from './dto/update-suggestion.dto';
 import { Suggestion } from './entities/suggestion.entity';
+import { ROLE } from '../users/entities/user.entity';
+import { Roles } from '../rbac/roles.decorator';
 
 @UseGuards(JwtAuthGuard)
 @Controller('suggestions')
@@ -40,6 +42,7 @@ export class SuggestionsController {
 
   @UseInterceptors(PublicFileInterceptor('suggestions-files'))
   @Post()
+  @Roles(ROLE.admin, ROLE.user)
   @HttpCode(201)
   async create(
     @Req() req: RequestWithUser,
@@ -62,6 +65,7 @@ export class SuggestionsController {
   }
 
   @Get()
+  @Roles(ROLE.admin, ROLE.user)
   @HttpCode(200)
   async findAll(@Req() req: RequestWithUser, @Query() queryParams: QueryDto) {
     const {
@@ -85,6 +89,7 @@ export class SuggestionsController {
 
   @Get(':id')
   @HttpCode(200)
+  @Roles(ROLE.admin, ROLE.user)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     const suggestion = await firstValueFrom(
       this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, id)
@@ -97,6 +102,7 @@ export class SuggestionsController {
   }
 
   @Delete(':id')
+  @Roles(ROLE.admin)
   @HttpCode(204)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     const suggestion = await firstValueFrom(
@@ -110,6 +116,7 @@ export class SuggestionsController {
   }
 
   @Put(':id')
+  @Roles(ROLE.admin)
   @HttpCode(200)
   async updateStatus(@Param('id', ParseUUIDPipe) id: string, @Body() updateSuggestionDto: UpdateSuggestionDto) {
     const suggestion = await firstValueFrom(
@@ -123,6 +130,7 @@ export class SuggestionsController {
   }
 
   @Put(':id/rating')
+  @Roles(ROLE.admin, ROLE.user)
   @HttpCode(200)
   async updateRating(
     @Param('id', ParseUUIDPipe) suggestionId: string,

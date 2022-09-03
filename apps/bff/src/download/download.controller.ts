@@ -1,5 +1,7 @@
-import { Controller, Get, Header, Param, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Header, HttpCode, Param, Res, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
+import { Roles } from '../rbac/roles.decorator';
+import { ROLE } from '../users/entities/user.entity';
 import { DownloadService } from './download.service';
 import { ParamSlothIdsDto } from './dto/param-sloth-ids.dto';
 
@@ -8,6 +10,8 @@ export class DownloadController {
   constructor(private readonly downloadService: DownloadService) {}
 
   @Get(':slothIds')
+  @Roles(ROLE.admin, ROLE.user)
+  @HttpCode(200)
   @Header('Content-Type', 'application/zip')
   async findAll(@Param() param: ParamSlothIdsDto, @Res({ passthrough: true }) res: Response) {
     const stream = await this.downloadService.findAll(param);

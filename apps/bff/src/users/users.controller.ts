@@ -16,18 +16,21 @@ import {
   HttpStatus,
   NotFoundException,
   ParseUUIDPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { ROLE, User } from './entities/user.entity';
 import { RequestWithUser, ServiceResponse, GetAll } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
 import { SlothsService } from '../sloths/sloths.service';
 import { TodayUserSloth } from './entities/todayUserSloth.dto';
 import { MS_IN_ONE_DAY } from '../common/constants';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { Roles } from '../rbac/roles.decorator';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -39,13 +42,19 @@ export class UsersController {
   ) {}
 
   @Post()
+  @Roles(ROLE.admin)
   @HttpCode(201)
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'create_user' }, createUserDto));
+    if (user.error) {
+      throw new HttpException(user.error, user.status);
+    }
+
     return user.data;
   }
 
   @Get()
+  @Roles(ROLE.admin)
   @HttpCode(200)
   async findAll(@Query() queryParams: QueryDto) {
     const { page, limit, filter, order } = queryParams;
@@ -60,6 +69,7 @@ export class UsersController {
 
   // eslint-disable-next-line class-methods-use-this
   @Get('/session')
+  @Roles(ROLE.user, ROLE.admin)
   @HttpCode(200)
   async getSession(@Req() req: RequestWithUser) {
     const { user } = req;
@@ -70,7 +80,29 @@ export class UsersController {
     return user;
   }
 
+  @Put('/profile')
+  @Roles(ROLE.user, ROLE.admin)
+  @HttpCode(200)
+  async updateProfile(@Req() req: RequestWithUser, @Body() updateProfileDto: UpdateProfileDto) {
+    const { user } = req;
+    if (!user || !user.id) {
+      throw new UnauthorizedException();
+    }
+
+    if (user.id !== updateProfileDto.id) throw new ForbiddenException();
+
+    const profile = await firstValueFrom(
+      this.client.send<ServiceResponse<User>>({ cmd: 'update_profile' }, { ...updateProfileDto, id: user.id })
+    );
+    if (profile.error) {
+      throw new HttpException(profile.error, profile.status);
+    }
+
+    return profile.data;
+  }
+
   @Get('/todaySloth')
+  @Roles(ROLE.user, ROLE.admin)
   @HttpCode(200)
   async findTodaySloth(@Req() req: RequestWithUser) {
     const { user } = req;
@@ -108,6 +140,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Roles(ROLE.admin)
   @HttpCode(200)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, id));
@@ -119,6 +152,7 @@ export class UsersController {
   }
 
   @Put(':id')
+  @Roles(ROLE.admin)
   @HttpCode(200)
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await firstValueFrom(
@@ -132,6 +166,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles(ROLE.admin)
   @HttpCode(204)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'delete_user' }, id));

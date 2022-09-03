@@ -2,7 +2,10 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { Public } from '../rbac/public.decorator';
 import { RequestWithUser } from '../app.interfaces';
+import { Roles } from '../rbac/roles.decorator';
+import { ROLE } from '../users/entities/user.entity';
 import { GithubAuthGuard } from './guards/github.guard';
 
 @Controller('auth')
@@ -10,14 +13,16 @@ export class AuthController {
   constructor(private jwtService: JwtService, private configService: ConfigService) {}
 
   // eslint-disable-next-line class-methods-use-this
-  @UseGuards(GithubAuthGuard)
   @Get('github')
+  @Public()
+  @UseGuards(GithubAuthGuard)
   githubLogin() {
     return { msg: 'Github Authentication' };
   }
 
-  @UseGuards(GithubAuthGuard)
   @Get('github/callback')
+  @Public()
+  @UseGuards(GithubAuthGuard)
   githubCallback(@Req() req: RequestWithUser, @Res() res: Response) {
     const { user } = req;
 
@@ -33,6 +38,7 @@ export class AuthController {
   }
 
   @Get('github/logout')
+  @Roles(ROLE.admin, ROLE.user)
   githubLogout(@Res() res: Response) {
     res.clearCookie(`${this.configService.get('COOKIE_NAME')}`);
     res.redirect(`${this.configService.get('FRONT_URL')}`);

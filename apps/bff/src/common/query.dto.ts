@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsJSON, IsOptional, Min, ValidateIf } from 'class-validator';
+import { IsInt, IsJSON, IsOptional, IsUUID, Min, ValidateIf } from 'class-validator';
 
 export class QueryDto {
   @IsInt()
@@ -24,4 +24,9 @@ export class QueryDto {
   @IsOptional()
   @ValidateIf(({ order }) => order !== '')
   order?: string;
+
+  @IsUUID(4)
+  @IsOptional()
+  @ValidateIf(({ userId }) => userId !== '')
+  userId?: string;
 }

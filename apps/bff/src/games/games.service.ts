@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { GetAll, ServiceResponse } from '../app.interfaces';
 import { QueryDto } from '../common/query.dto';
+import { ROLE, User } from '../users/entities/user.entity';
 import { CreateGameResultDto } from './dto/create-game-result.dto';
 import { GameResult } from './entities/game-result.entity';
 import { Game } from './entities/game.entity';
@@ -44,10 +45,10 @@ export class GamesService {
     return results.data;
   }
 
-  async findAllResults(gameId: string, queryParams: QueryDto & { userId?: string }, userId?: string) {
+  async findAllResults(gameId: string, queryParams: QueryDto, user?: User) {
     const { page, limit, filter, order, userId: userIdParam } = queryParams;
 
-    if (userIdParam && userIdParam !== userId) throw new ForbiddenException();
+    if (userIdParam && userIdParam !== user?.id && user?.role !== ROLE.admin) throw new ForbiddenException();
 
     const results = await firstValueFrom(
       this.client.send<ServiceResponse<GetAll<GameResult>>>(
@@ -55,7 +56,7 @@ export class GamesService {
         {
           page,
           limit,
-          where: { gameId, ...(filter && JSON.parse(filter)), ...(userIdParam && { userId }) },
+          where: { gameId, ...(filter && JSON.parse(filter)), ...(userIdParam && { userId: user?.id }) },
           ...(order && { orderBy: JSON.parse(order) }),
         }
       )

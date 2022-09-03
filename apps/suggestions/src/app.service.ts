@@ -110,6 +110,10 @@ export class AppService {
     userId,
     rate,
   }: UpdateSuggestionRatingDto): Promise<ServiceResponse<Pick<Suggestion, 'id' | 'rating'>>> {
+    const suggestion = await this.getOne({ id: suggestionId });
+
+    if (!suggestion.data) return suggestion;
+
     const where = { SuggestionUser: { suggestionId, userId } };
     await this.prisma.suggestionUserRating.upsert({
       where,
