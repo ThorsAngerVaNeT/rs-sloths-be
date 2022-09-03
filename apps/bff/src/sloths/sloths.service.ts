@@ -12,7 +12,7 @@ export class SlothsService {
     private readonly client: ClientProxy
   ) {}
 
-  async findAll(queryParams: QueryDto & { userId?: string }): Promise<GetAll<Sloth> | undefined> {
+  async findAll(queryParams: QueryDto): Promise<GetAll<Sloth> | undefined> {
     const { page, limit, filter, order, userId } = queryParams;
     const sloths = await firstValueFrom(
       this.client.send<ServiceResponse<GetAll<Sloth>>>(

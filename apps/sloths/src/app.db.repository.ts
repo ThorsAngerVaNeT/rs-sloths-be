@@ -130,6 +130,10 @@ export class SlothsRepo {
     userId,
     rate,
   }: UpdateSlothRatingDto): Promise<ServiceResponse<Pick<Sloth, 'id' | 'rating'>>> {
+    const sloth = await this.getOne({ id: slothId });
+
+    if (!sloth.data) return sloth;
+
     const where = { SlothUser: { slothId, userId } };
     await this.prisma.slothUserRating.upsert({
       where,
