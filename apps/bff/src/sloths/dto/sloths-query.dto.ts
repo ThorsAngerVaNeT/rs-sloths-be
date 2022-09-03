@@ -5,7 +5,7 @@ import { getOrdersArray } from '../../common/utils';
 
 const orderValues = getOrdersArray(['id', 'caption', 'description', 'image_url', 'rating', 'createdAt']);
 
-export class GameQueryDto extends OmitType(QueryDto, ['order']) {
+export class SlothsQueryDto extends OmitType(QueryDto, ['order']) {
   @IsIn(orderValues)
   order?: string;
 }

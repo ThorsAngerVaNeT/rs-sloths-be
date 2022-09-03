@@ -33,6 +33,7 @@ import { SlothsService } from './sloths.service';
 import { Roles } from '../rbac/roles.decorator';
 import { ROLE } from '../users/entities/user.entity';
 import { getOrderBy, getWhere } from '../common/utils';
+import { SlothsQueryDto } from './dto/sloths-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sloths')
@@ -68,7 +69,7 @@ export class SlothsController {
   @Get()
   @Roles(ROLE.admin, ROLE.user)
   @HttpCode(200)
-  async findAll(@Req() req: RequestWithUser, @Query() queryParams: QueryDto) {
+  async findAll(@Req() req: RequestWithUser, @Query() queryParams: SlothsQueryDto) {
     const {
       user: { id: userId },
     } = req;
