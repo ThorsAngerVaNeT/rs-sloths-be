@@ -21,7 +21,7 @@ import { firstValueFrom } from 'rxjs';
 import { join } from 'path';
 import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { PublicFileInterceptor } from '../public-file.interceptor';
+import { PublicFileInterceptor } from '../interceptors/public-file.interceptor';
 import { CreateSuggestionDto } from './dto/create-suggestion.dto';
 import { UpdateSuggestionRatingDto } from './dto/update-suggestion-rating.dto';
 import { UpdateSuggestionDto } from './dto/update-suggestion.dto';

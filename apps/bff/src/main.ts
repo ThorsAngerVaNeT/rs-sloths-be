@@ -5,7 +5,9 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'warn', 'error'],
+  });
   const configService = app.get(ConfigService);
   app.enableCors({
     origin: [`${configService.get('FRONT_URL')}`, 'http://localhost:5173', 'https://github.com'],
@@ -13,6 +15,6 @@ async function bootstrap() {
   });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-  await app.listen(3000);
+  await app.listen(configService.get('PORT') || 3000);
 }
 bootstrap();

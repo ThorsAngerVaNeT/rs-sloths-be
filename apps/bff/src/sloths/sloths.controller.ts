@@ -21,7 +21,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { PublicFileInterceptor } from '../public-file.interceptor';
+import { PublicFileInterceptor } from '../interceptors/public-file.interceptor';
 import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
