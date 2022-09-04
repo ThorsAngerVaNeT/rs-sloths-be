@@ -5,10 +5,8 @@ import {
   Body,
   Param,
   Delete,
-  Inject,
   UseInterceptors,
   UploadedFile,
-  HttpException,
   HttpCode,
   Query,
   Req,
@@ -16,28 +14,23 @@ import {
   Put,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
 import { join } from 'path';
-import { RequestWithUser, ServiceResponse } from '../app.interfaces';
+import { RequestWithUser } from '../app.interfaces';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { PublicFileInterceptor } from '../interceptors/public-file.interceptor';
 import { CreateSuggestionDto } from './dto/create-suggestion.dto';
 import { UpdateSuggestionRatingDto } from './dto/update-suggestion-rating.dto';
 import { UpdateSuggestionDto } from './dto/update-suggestion.dto';
-import { Suggestion } from './entities/suggestion.entity';
 import { ROLE } from '../users/entities/user.entity';
 import { Roles } from '../rbac/roles.decorator';
 import { getOrderBy, getWhere } from '../common/utils';
 import { SuggestionsQueryDto } from './dto/suggestions-query.dto';
+import { SuggestionsService } from './suggestions.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('suggestions')
 export class SuggestionsController {
-  constructor(
-    @Inject('SUGGESTIONS')
-    private readonly client: ClientProxy
-  ) {}
+  constructor(private readonly suggestionsService: SuggestionsService) {}
 
   @UseInterceptors(PublicFileInterceptor('suggestions-files'))
   @Post()
@@ -49,18 +42,8 @@ export class SuggestionsController {
     @Body() createSuggestionDto: CreateSuggestionDto
   ) {
     const { user } = req;
-    const imageUrl = file ? join('suggestion-files', file.filename) : null;
-    const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>(
-        { cmd: 'create_suggestion' },
-        { ...createSuggestionDto, userId: user.id, image_url: imageUrl }
-      )
-    );
-    if (suggestion.error) {
-      throw new HttpException(suggestion.error, suggestion.status);
-    }
-
-    return suggestion.data;
+    const imageUrl = file ? join('suggestions-files', file.filename) : null;
+    return this.suggestionsService.create(createSuggestionDto, user, imageUrl);
   }
 
   @Get()
@@ -90,52 +73,28 @@ export class SuggestionsController {
       userId,
     };
 
-    const suggestions = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion[]>>({ cmd: 'get_suggestions' }, conditions)
-    );
-    return suggestions.data;
+    return this.suggestionsService.findAll(conditions);
   }
 
   @Get(':id')
   @HttpCode(200)
   @Roles(ROLE.admin, ROLE.user)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'get_suggestion' }, id)
-    );
-    if (suggestion.error) {
-      throw new HttpException(suggestion.error, suggestion.status);
-    }
-
-    return suggestion.data;
+    return this.suggestionsService.findOne(id);
   }
 
   @Delete(':id')
   @Roles(ROLE.admin)
   @HttpCode(204)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
-    const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'delete_suggestion' }, id)
-    );
-    if (suggestion.error) {
-      throw new HttpException(suggestion.error, suggestion.status);
-    }
-
-    return suggestion.data;
+    return this.suggestionsService.remove(id);
   }
 
   @Put(':id')
   @Roles(ROLE.admin)
   @HttpCode(200)
   async updateStatus(@Param('id', ParseUUIDPipe) id: string, @Body() updateSuggestionDto: UpdateSuggestionDto) {
-    const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Suggestion>>({ cmd: 'update_status' }, { ...updateSuggestionDto, id })
-    );
-    if (suggestion.error) {
-      throw new HttpException(suggestion.error, suggestion.status);
-    }
-
-    return suggestion.data;
+    return this.suggestionsService.update(id, updateSuggestionDto);
   }
 
   @Put(':id/rating')
@@ -145,16 +104,6 @@ export class SuggestionsController {
     @Param('id', ParseUUIDPipe) suggestionId: string,
     @Body() updateSuggestionRatingDto: UpdateSuggestionRatingDto
   ) {
-    const suggestion = await firstValueFrom(
-      this.client.send<ServiceResponse<Pick<Suggestion, 'id' | 'rating'>>>(
-        { cmd: 'update_rating' },
-        { ...updateSuggestionRatingDto, suggestionId }
-      )
-    );
-    if (suggestion.error) {
-      throw new HttpException(suggestion.error, suggestion.status);
-    }
-
-    return suggestion.data;
+    return this.suggestionsService.updateRating(suggestionId, updateSuggestionRatingDto);
   }
 }

@@ -1,27 +1,16 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
-import { ServiceResponse, UserValidateData } from '../app.interfaces';
-import { User } from '../users/entities/user.entity';
+import { Injectable } from '@nestjs/common';
+import { UserValidateData } from '../app.interfaces';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @Inject('USERS')
-    private readonly client: ClientProxy
-  ) {}
+  constructor(private usersService: UsersService) {}
 
   async validateUser(userData: UserValidateData) {
-    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'validate' }, userData));
-    if (user.error) {
-      throw new HttpException(user.error, user.status);
-    }
-
-    return user.data;
+    return this.usersService.validateUser(userData);
   }
 
   async findUser(id: string) {
-    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'get_user' }, id));
-    return user.data;
+    return this.usersService.findOne(id);
   }
 }

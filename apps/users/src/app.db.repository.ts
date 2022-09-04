@@ -10,7 +10,7 @@ export class UsersRepo {
   constructor(private prisma: PrismaService) {}
 
   public async getAll(params: GetAllConditions): Promise<ServiceResponse<UsersAll>> {
-    const { page = 1, limit, cursor, where, orderBy } = params;
+    const { page = 1, limit, cursor, where, orderBy, select } = params;
 
     const take = limit || undefined;
     const skip = take ? (page - 1) * take : undefined;
@@ -22,7 +22,7 @@ export class UsersRepo {
     };
     const [count, items] = await this.prisma.$transaction([
       this.prisma.user.count(conditions),
-      this.prisma.user.findMany({ ...conditions, skip, take }),
+      this.prisma.user.findMany({ ...conditions, skip, take, ...(select && { select }) }),
     ]);
 
     return { data: { count, items }, status: HttpStatus.OK };
