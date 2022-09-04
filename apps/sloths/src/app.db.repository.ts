@@ -155,7 +155,11 @@ export class SlothsRepo {
   }
 
   public async getUniqueTags(): Promise<ServiceResponse<TagsValueList>> {
-    const data = await this.prisma.tag.findMany({ select: { value: true }, distinct: ['value'] });
+    const data = await this.prisma.tag.findMany({
+      select: { value: true },
+      distinct: ['value'],
+      orderBy: { value: 'asc' },
+    });
 
     return { data, status: HttpStatus.OK };
   }
