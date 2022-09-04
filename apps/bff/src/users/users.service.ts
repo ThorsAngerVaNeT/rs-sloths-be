@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { GetAll, GetAllConditions, ServiceResponse } from '../app.interfaces';
+import { GetAll, GetAllConditions, ServiceResponse, UserValidateData } from '../app.interfaces';
 import { MS_IN_ONE_DAY } from '../common/constants';
 import { SlothsService } from '../sloths/sloths.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -106,5 +106,14 @@ export class UsersService {
     }
 
     return sloth;
+  }
+
+  async validateUser(userData: UserValidateData) {
+    const user = await firstValueFrom(this.client.send<ServiceResponse<User>>({ cmd: 'validate' }, userData));
+    if (user.error) {
+      throw new HttpException(user.error, user.status);
+    }
+
+    return user.data;
   }
 }

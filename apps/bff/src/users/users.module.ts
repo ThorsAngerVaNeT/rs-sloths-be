@@ -8,5 +8,6 @@ import { UsersService } from './users.service';
   imports: [SlothsModule],
   controllers: [UsersController],
   providers: [MICROSERVICES.USERS, UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}
