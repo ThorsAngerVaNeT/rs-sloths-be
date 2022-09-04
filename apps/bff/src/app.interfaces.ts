@@ -26,6 +26,7 @@ export interface GetAllConditions {
   orderBy?: Record<string, unknown>;
   userId?: string;
   gameId?: string;
+  select?: Record<string, unknown>;
 }
 
 export type WhereFieldName =
