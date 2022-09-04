@@ -4,6 +4,7 @@ import * as archiver from 'archiver';
 import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
 import { extname, join } from 'path';
+import { getWhere } from '../common/utils';
 import { SlothsService } from '../sloths/sloths.service';
 import { ParamSlothIdsDto } from './dto/param-sloth-ids.dto';
 
@@ -16,10 +17,9 @@ export class DownloadService {
   }
 
   async findAll(query: ParamSlothIdsDto) {
-    const where = {
-      id: { in: query.slothIds },
-    };
-    const sloth = await this.slothsService.findAll({ filter: JSON.stringify(where) });
+    const where = getWhere({ filterFields: ['id'], filterValues: query.slothIds });
+
+    const sloth = await this.slothsService.findAll({ ...(where && { where }) });
 
     if (sloth && sloth.count) {
       const archive = archiver('zip', {

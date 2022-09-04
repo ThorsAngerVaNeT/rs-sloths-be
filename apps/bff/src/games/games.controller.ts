@@ -5,6 +5,10 @@ import { QueryDto } from '../common/query.dto';
 import { Roles } from '../rbac/roles.decorator';
 import { ROLE } from '../users/entities/user.entity';
 import { CreateGameResultDto } from './dto/create-game-result.dto';
+import { GameQueryDto } from './dto/game-query.dto';
+import { GameResultQueryDto } from './dto/game-result-query.dto';
+import { GameResult } from './entities/game-result.entity';
+import { Game } from './entities/game.entity';
 import { GamesService } from './games.service';
 
 @UseGuards(JwtAuthGuard)
@@ -15,7 +19,7 @@ export class GamesController {
   @Get()
   @Roles(ROLE.admin)
   @HttpCode(200)
-  async findAll(@Query() queryParams: QueryDto) {
+  async findAll(@Query() queryParams: GameQueryDto) {
     return this.gamesService.findAll(queryParams);
   }
 
@@ -32,7 +36,7 @@ export class GamesController {
   async findAllResults(
     @Req() req: RequestWithUser,
     @Param('gameId', ParseUUIDPipe) gameId: string,
-    @Query() queryParams: QueryDto
+    @Query() queryParams: GameResultQueryDto
   ) {
     const { user } = req;
     return this.gamesService.findAllResults(gameId, queryParams, user);

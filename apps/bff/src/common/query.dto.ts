@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsJSON, IsOptional, IsUUID, Min, ValidateIf } from 'class-validator';
+import { IsArray, IsInt, IsJSON, IsOptional, IsString, IsUUID, Min, ValidateIf } from 'class-validator';
 
 export class QueryDto {
   @IsInt()
@@ -15,10 +15,15 @@ export class QueryDto {
   @ValidateIf(({ limit }) => limit !== '')
   limit?: number;
 
-  @IsJSON()
+  @IsArray()
   @IsOptional()
+  @Transform(({ value }) => (value ? value.split(',') : ''))
   @ValidateIf(({ filter }) => filter !== '')
-  filter?: string;
+  filter?: string[];
+
+  @IsString()
+  @IsOptional()
+  searchText: string;
 
   @IsJSON()
   @IsOptional()
