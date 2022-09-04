@@ -1,3 +1,5 @@
+import { User } from '../../users/entities/user.entity';
+
 export class GameResult {
   id: string;
 
@@ -10,4 +12,6 @@ export class GameResult {
   time: number;
 
   createdAt: Date;
+
+  user?: User;
 }

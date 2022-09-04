@@ -42,7 +42,7 @@ export class SuggestionsController {
     @Body() createSuggestionDto: CreateSuggestionDto
   ) {
     const { user } = req;
-    const imageUrl = file ? join('suggestion-files', file.filename) : null;
+    const imageUrl = file ? join('suggestions-files', file.filename) : null;
     return this.suggestionsService.create(createSuggestionDto, user, imageUrl);
   }
 

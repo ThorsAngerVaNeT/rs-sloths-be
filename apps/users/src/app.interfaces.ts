@@ -14,6 +14,7 @@ export interface GetAllConditions {
   cursor?: Prisma.UserWhereUniqueInput;
   where?: Prisma.UserWhereInput;
   orderBy?: Prisma.UserOrderByWithRelationInput;
+  select?: Prisma.UserSelect;
 }
 
 export interface UsersAll {
