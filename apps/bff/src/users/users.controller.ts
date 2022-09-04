@@ -72,7 +72,7 @@ export class UsersController {
       throw new UnauthorizedException();
     }
 
-    return user;
+    return this.usersService.findOne(user.id);
   }
 
   @Put('/profile')
