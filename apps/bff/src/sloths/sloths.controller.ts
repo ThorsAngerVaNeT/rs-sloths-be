@@ -16,8 +16,8 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { PublicFileInterceptor } from '../public-file.interceptor';
-import { RequestWithUser } from '../app.interfaces';
+import { PublicFileInterceptor } from '../interceptors/public-file.interceptor';
+import { RequestWithUser, ServiceResponse } from '../app.interfaces';
 import { CreateSlothDto } from './dto/create-sloth.dto';
 import { UpdateSlothRatingDto } from './dto/update-sloth-rating.dto';
 import { UpdateSlothDto } from './dto/update-sloth.dto';
