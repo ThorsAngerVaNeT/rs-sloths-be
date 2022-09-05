@@ -20,6 +20,7 @@
     "start:dev:users": "cd apps/users && npm run start:dev",
     "start:dev:sloths": "cd apps/sloths && npm run start:dev",
     "start:dev:suggestions": "cd apps/suggestions && npm run start:dev",
+    "start:dev:games": "cd apps/games && npm run start:dev",
     "start:dev:bff": "cd apps/bff && npm run start:dev",
     "lint": "lint-staged --relative",
     "lint-conc": "concurrently -n w: npm:lint:*",
