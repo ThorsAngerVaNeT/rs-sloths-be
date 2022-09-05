@@ -25,7 +25,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   await app.listen(configService.get('PORT') || 3000, () => {
-    console.log(`RS Sloths BFF has been started and running on port: ${configService.get('port')}`);
+    console.log(`RS Sloths BFF has been started and running on port: ${configService.get('PORT')}`);
   });
 }
 bootstrap();
