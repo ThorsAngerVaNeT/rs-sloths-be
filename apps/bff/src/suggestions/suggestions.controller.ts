@@ -54,13 +54,13 @@ export class SuggestionsController {
       user: { id: userId },
     } = req;
 
-    const { page, limit, filter: filterValues = [], order = '', searchText } = queryParams;
+    const { page, limit, filter: filterValues = [], order = '', searchText, userId: userIdParam } = queryParams;
 
     const where = getWhere({
       searchText,
       searchFields: ['description'],
-      filterValues,
-      filterFields: ['status'],
+      filterValues: userIdParam ? [userIdParam] : filterValues,
+      filterFields: userIdParam ? ['userId'] : ['status'],
     });
 
     const orderBy = getOrderBy(order);

@@ -14,7 +14,11 @@ export class CreateSlothDto {
 
   @Transform(({ value }) => {
     try {
-      return value ? JSON.parse(value).map((tag: CreateTagDto) => plainToClass(CreateTagDto, tag)) : '';
+      return value
+        ? JSON.parse(value)
+            .filter((tag: CreateTagDto) => tag.value)
+            .map((tag: CreateTagDto) => plainToClass(CreateTagDto, tag))
+        : '';
     } catch (error) {
       throw new BadRequestException(['Tags must be JSON']);
     }

@@ -65,7 +65,7 @@ export class UsersService {
 
   async updateProfile(updateProfileDto: UpdateProfileDto) {
     const profile = await firstValueFrom(
-      this.client.send<ServiceResponse<User>>({ cmd: 'update_profile' }, updateProfileDto)
+      this.client.send<ServiceResponse<User>>({ cmd: 'update_user' }, updateProfileDto)
     );
     if (profile.error) {
       throw new HttpException(profile.error, profile.status);
