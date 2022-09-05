@@ -1,14 +1,11 @@
 import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { RequestWithUser } from '../app.interfaces';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { QueryDto } from '../common/query.dto';
 import { Roles } from '../rbac/roles.decorator';
 import { ROLE } from '../users/entities/user.entity';
 import { CreateGameResultDto } from './dto/create-game-result.dto';
 import { GameQueryDto } from './dto/game-query.dto';
 import { GameResultQueryDto } from './dto/game-result-query.dto';
-import { GameResult } from './entities/game-result.entity';
-import { Game } from './entities/game.entity';
 import { GamesService } from './games.service';
 
 @UseGuards(JwtAuthGuard)
